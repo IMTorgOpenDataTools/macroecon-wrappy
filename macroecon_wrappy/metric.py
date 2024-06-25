@@ -35,11 +35,11 @@ class Metric(pd.Series):
         self.title = None
         self.id = None
         self.source = None
-        self.references = []
+        self.references = None
 
         self.notes = None
-        self.date_range = {'first':None, 'last':None}
-        self.frequency = 'Weekly'
+        self.date_range = None
+        self.frequency = None
         self.last_updated = None
         self.obseravation_date = None
         self.release = None
@@ -49,5 +49,7 @@ class Metric(pd.Series):
         self.units = None
         self.units_short = None
 
-        
-
+    def set_metadata(self, **kwargs):
+        for name, value in kwargs.items():
+            if name in dir(self):
+                setattr(self, name, value)

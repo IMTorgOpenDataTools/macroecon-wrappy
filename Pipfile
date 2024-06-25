@@ -13,6 +13,7 @@ lxml = "*"
 
 [dev-packages]
 pytest = "*"
+fredapi = "*"
 
 [requires]
 python_version = "3.12"

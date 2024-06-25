@@ -8,7 +8,11 @@ __version__ = "0.1.0"
 __license__ = "MIT"
 
 
+from .sources.nber import url_recession_bars
 from .sources import fred
+
+import pandas as pd
+import requests
 
 
 
@@ -22,3 +26,13 @@ def get_most_popular_series(n, src='fred'):
             raise Exception(f'must choose from one of the `src` options')
 
     return results
+
+
+def get_recession_bars():
+    """Get timespans needed to graph recession bars."""
+    url = url_recession_bars
+    raw = requests.get(url)
+    df = pd.DataFrame(raw.json())
+    df['peak'] = pd.to_datetime(df['peak'])
+    df['trough'] = pd.to_datetime(df['trough'])
+    return df

@@ -7,25 +7,13 @@ __author__ = "Jason Beach"
 __version__ = "0.1.0"
 __license__ = "MIT"
 
-from .sources.nber import url_recession_bars
+from . import load
 
 import pandas as pd
 import numpy as np
 import plotnine as p9
-import requests
 
 import warnings
-
-
-
-def get_recession_bars():
-    """Get timespans needed to graph recession bars."""
-    url = url_recession_bars
-    raw = requests.get(url)
-    df = pd.DataFrame(raw.json())
-    df['peak'] = pd.to_datetime(df['peak'])
-    df['trough'] = pd.to_datetime(df['trough'])
-    return df
 
 
 def graph_ts(df, cols=[], recession_bars=True, log_y=True, conf_region=False, height=3, width=6):
@@ -65,7 +53,7 @@ def graph_ts(df, cols=[], recession_bars=True, log_y=True, conf_region=False, he
         raise Exception('need at least one columns to graph')
     if recession_bars:
         if 'bars_df' not in globals():
-            bars_df = get_recession_bars()
+            bars_df = load.get_recession_bars()
         mn = np.min(df['date'])
         mx = np.max(df['date'])
         bars_mod = bars_df[bars_df.peak > mn]
