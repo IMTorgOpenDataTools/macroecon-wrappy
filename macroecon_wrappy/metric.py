@@ -35,14 +35,15 @@ class Metric(pd.Series):
         * units: (string) - units of the data series.
         * units_short: (string) - units of the data series. Abbreviated.
     """
+
     def __init__(self, data):
         super().__init__(data=data)
-        self._metadata_keys = []
+        self._metadata = {}
+        
         self.title = None
         self.id = None
         self.source = None
         self.references = None
-
         self.notes = None
         self.date_range = None
         self.frequency = None
@@ -56,10 +57,10 @@ class Metric(pd.Series):
         self.units_short = None
 
     def set_metadata(self, **kwargs):
-        for name, value in kwargs.items():
-            if name in dir(self):
-                self._metadata_keys.append(name)
-                setattr(self, name, value)
+        for key, value in kwargs.items():
+            if key in dir(self):
+                setattr(self, key, value)
+            self._metadata[key] = value
 
     def get_metadata(self):
-        return self._metadata_keys
+        return self._metadata

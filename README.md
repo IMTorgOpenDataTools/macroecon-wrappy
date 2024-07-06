@@ -109,13 +109,13 @@ Extractor - interacts with site to get files and extract data
 ## Roadmap
 
 Data sources
-* nber
+* nber (Extractor, ...)
   - recessions: https://www.nber.org/research/data/us-business-cycle-expansions-and-contractions
-* internet archive
+* internet archive (Adapter)
   - explanation of sources: https://stackoverflow.com/questions/33811582/how-to-access-wayback-machine-programmatically
   - internet archive: https://archive.org/developers/internetarchive/quickstart.html
   - wayback machine: https://github.com/jsvine/waybackpack
-* yahoo finance
+* yahoo finance (Adapter)
   - MOVE index: https://finance.yahoo.com/quote/%5EMOVE/history/?period1=1672790400&period2=1701648000
 * us treasury, additional frb sites
   - treasury home: https://home.treasury.gov/policy-issues/financing-the-government/interest-rate-statistics

@@ -28,7 +28,25 @@ class FredApiAdapter(AdapterInterface):
         series_meta_dict = self.get_metadata(seriesId)
         if not series_meta_dict:
             raise Exception(f'no metadata found for seriesId {seriesId}')
+        
+        #TODO: metadata mapping needs improvement
         metric = Metric(pd_series)
+        metric.title = pd_series['title']
+        metric.id = pd_series['id']
+        metric.source = None
+        metric.references = None
+        metric.notes = pd_series['notes']
+        metric.date_range = pd_series['observation_start'], pd_series['observation_end'], 
+        metric.frequency = pd_series['frequency']
+        metric.last_updated = pd_series['last_updated']
+        metric.obseravation_date = None
+        metric.release = None
+        metric.seasonal_adjustment = pd_series['seasonal_adjustment']
+        metric.seasonal_adjustment_short = pd_series['seasonal_adjustment_short']
+        metric.t = (pd_series['observation_end'] - pd_series['observation_start']).astype('timedelta64[h]')
+        metric.units = pd_series['units']
+        metric.units_short = pd_series['units_short']
+
         metric.set_metadata(**series_meta_dict)
         return metric
     
@@ -53,9 +71,3 @@ class FredApiAdapter(AdapterInterface):
             return series_meta_dict
         else:
             return None
-
-
-        
-
-
-

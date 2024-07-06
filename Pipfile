@@ -10,12 +10,16 @@ requests = "*"
 plotnine = "*"
 bs4 = "*"
 lxml = "*"
+requests-cache = "*"
+requests-ratelimiter = "*"
+pyrate-limiter = "*"
 macroecon-wrappy = {file = ".", editable = true}
 
 [dev-packages]
 pytest = "*"
 fredapi = "*"
 ipykernel = "*"
+yfinance = "*"
 
 [requires]
 python_version = "3.12"

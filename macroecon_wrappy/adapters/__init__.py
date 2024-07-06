@@ -9,8 +9,10 @@ __license__ = "MIT"
 
 #import all adapters
 from .fredapi import FredApiAdapter
+from .yahoo import YahooAdapter
 
 
 
 #make available
 FredApi = FredApiAdapter()
+YahooFin = YahooAdapter()
