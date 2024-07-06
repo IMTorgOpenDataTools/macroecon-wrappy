@@ -34,11 +34,14 @@ def test_fredapi():
     metric = FredApi.get_data('GDP')
     assert isinstance(metric, Metric)
     assert metric.shape[0] >= 313
+    assert metric.title == 'Gross Domestic Product'
 
 def test_yahoo():
     YahooFin.set_wrapper(yf)
     metric = YahooFin.get_data(tickers='MSFT')
     assert isinstance(metric, Metric)
+    assert metric.id == 'MSFT'
+    assert metric.title == 'Microsoft Corporation'
     assert metric.shape[0] >= 9655
     metric1 = YahooFin.get_data(tickers='MSFT', period="max")
     assert metric.shape[0] >= metric1.shape[0]

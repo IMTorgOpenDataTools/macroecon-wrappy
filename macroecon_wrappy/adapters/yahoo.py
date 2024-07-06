@@ -74,21 +74,21 @@ class YahooAdapter(AdapterInterface):
 
         #TODO: metadata mapping needs improvement
         metric = Metric(ts)
-        self.title = tkr.info['longName']
-        self.id = tkr.info['symbol']
-        self.source = 'finance.yahoo.com/'
-        self.references = None
-        self.notes = None
-        self.date_range = df_hist.index.min(), df_hist.index.max()
-        self.frequency = None
-        self.last_updated = None
-        self.obseravation_date = None
-        self.release = None
-        self.seasonal_adjustment = None
-        self.seasonal_adjustment_short = None
-        self.t = df_hist.index.max() - df_hist.index.min()
-        self.units = '$ - dollar'
-        self.units_short = '$'
+        metric.title = tkr.info['longName']
+        metric.id = tkr.info['symbol']
+        metric.source = 'finance.yahoo.com/'
+        metric.references = None
+        metric.notes = None
+        metric.date_range = df_hist.index.min(), df_hist.index.max()
+        metric.frequency = None
+        metric.last_updated = None
+        metric.obseravation_date = None
+        metric.release = None
+        metric.seasonal_adjustment = None
+        metric.seasonal_adjustment_short = None
+        metric.t = df_hist.index.max() - df_hist.index.min()
+        metric.units = '$ - dollar'
+        metric.units_short = '$'
 
         metric.set_metadata(**tkr.info)
         return metric

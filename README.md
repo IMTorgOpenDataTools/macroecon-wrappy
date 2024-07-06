@@ -20,23 +20,13 @@ Select a source and associated wrapper.  For this example, we will use the [fred
 Set the authentication key for the wrapper.
 
 ```python
-from macroecon_wrappy.auth import Auth
-from fredapi import Fred
-
-filepath = Path('tests/data/test-SECRETS.yaml')
-auth = Auth(filepath)
-fred = Fred(api_key=auth.data['API_KEY_FED'])
+<TODO: add from notebooks/test.ipynb>
 ```
 
 Using the `FredApi` Adapter enables seemless integration with the rest of the module, in particular, incorporating data series into Measures.
 
 ```python
-from macroecon_wrappy.adapters import FredApi
-from macroecon_wrappy.measure import Measure
-
-FredApi.set_wrapper(fred)
-data_metric = FredApi.get_data('GDP')
-output_measure = Measure(data_metric)
+<TODO: add from notebooks/test.ipynb>
 ```
 
 Work directly with the Measure for various tasks and transformations.
@@ -47,7 +37,6 @@ Work directly with the Measure for various tasks and transformations.
 
 ```bash
 pipenv run pytest --collect-only
-
 ```
 
 

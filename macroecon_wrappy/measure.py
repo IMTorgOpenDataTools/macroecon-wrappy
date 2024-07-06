@@ -31,6 +31,9 @@ class Measure:
         self.metrics = []
         self.add_metric(metric_or_metric_list)
 
+    def __repr__(self) -> str:
+        return self.df()
+
     def add_metric(self, metric_or_metric_list):
         """Add data from either Metric or list of Metrics"""
         metric_list = self.prepare_input_for_ingest(metric_or_metric_list)
@@ -59,7 +62,10 @@ class Measure:
             raise Exception('arg `metric_or_metric_list` must be of type Metric of list of Metrics')
         
     def df(self):
-        return pd.DataFrame(self.metrics)
+        df = pd.DataFrame(self.metrics).transpose()
+        df.columns = [metric.id if (metric.id not in [None, '']) else f'col-{idx}' for idx, metric in enumerate(self.metrics) ]
+        df.sort_index(ascending=False, inplace=True)
+        return df
             
     def to_long(self):
         """Convert data to long-format DataFrame"""

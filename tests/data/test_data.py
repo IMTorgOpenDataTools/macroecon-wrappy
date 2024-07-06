@@ -21,4 +21,4 @@ df_series = pd.DataFrame([
     {'date': '1980-01-01', 'value1': 800.0, 'value2': 900},
     {'date': '1990-01-01', 'value1': 1000.0, 'value2': 950},
 ])
-df_series['date'] = pd.to_datetime(df_series['date'])
+df_series.index = pd.to_datetime(df_series['date'])
