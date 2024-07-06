@@ -13,25 +13,31 @@ import pandas as pd
 
 class Metric(pd.Series):
     """Series object with meta-data.
-    
-    * date_range: (string) - specifies the dates of the first and last observations.
-    * frequency: (string) - data frequency. `Daily`, `Weekly`, `Monthly`, `Quarterly`, `Semiannual`, or `Annual`.
-    * frequency_short: (string) - data frequency. Abbreviated. `D`, `W`, `M`, `Q`, `SA, or `A`.
-    * last_updated: (string) - date series was last updated.
-    * notes: (string) - details about series. Not available for all series.
-    * observation_date: (string) - vintage date at which data are observed.
-    * release: (string) - statistical release containing data.
-    * seasonal_adjustment: (string) - specifies whether the data has been seasonally adjusted.
-    * seasonal_adjustment_short: (string) - specifies whether the data has been seasonally adjusted. Abbreviated.
-    * series_id: (string) - unique FRED series ID code.
-    * source: (string) - original source of the data.
-    * t: (int) - number corresponding to frequency: 365 for daily, 52 for weekly, 12 for monthly, 4 for quarterly, and 1 for annual.
-    * title: (string) - title of the data series.
-    * units: (string) - units of the data series.
-    * units_short: (string) - units of the data series. Abbreviated.
+
+    Series
+        * index: (Timestamp)
+        * values: (float)
+
+    Metadata
+        * date_range: (string) - specifies the dates of the first and last observations.
+        * frequency: (string) - data frequency. `Daily`, `Weekly`, `Monthly`, `Quarterly`, `Semiannual`, or `Annual`.
+        * frequency_short: (string) - data frequency. Abbreviated. `D`, `W`, `M`, `Q`, `SA, or `A`.
+        * last_updated: (string) - date series was last updated.
+        * notes: (string) - details about series. Not available for all series.
+        * observation_date: (string) - vintage date at which data are observed.
+        * release: (string) - statistical release containing data.
+        * seasonal_adjustment: (string) - specifies whether the data has been seasonally adjusted.
+        * seasonal_adjustment_short: (string) - specifies whether the data has been seasonally adjusted. Abbreviated.
+        * series_id: (string) - unique FRED series ID code.
+        * source: (string) - original source of the data.
+        * t: (int) - number corresponding to frequency: 365 for daily, 52 for weekly, 12 for monthly, 4 for quarterly, and 1 for annual.
+        * title: (string) - title of the data series.
+        * units: (string) - units of the data series.
+        * units_short: (string) - units of the data series. Abbreviated.
     """
     def __init__(self, data):
         super().__init__(data=data)
+        self._metadata_keys = []
         self.title = None
         self.id = None
         self.source = None
@@ -52,4 +58,8 @@ class Metric(pd.Series):
     def set_metadata(self, **kwargs):
         for name, value in kwargs.items():
             if name in dir(self):
+                self._metadata_keys.append(name)
                 setattr(self, name, value)
+
+    def get_metadata(self):
+        return self._metadata_keys

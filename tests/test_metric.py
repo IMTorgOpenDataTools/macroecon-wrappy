@@ -18,4 +18,13 @@ import pandas as pd
 def test_metric():
     ts = df_series['value1']
     metric1 = Metric(ts)
+    metric1.set_metadata(title='title1')
+    #series attributes
     assert metric1.values.__len__() == df_series.shape[0]
+    assert metric1.shape == (6,)
+    #series methods
+    assert metric1.T.size == 6
+    assert metric1.T.shape == (6,)
+    #metric attributes
+    assert metric1.title == 'title1'
+    assert metric1.get_metadata() == ['title']

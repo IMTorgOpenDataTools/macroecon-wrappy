@@ -10,10 +10,12 @@ requests = "*"
 plotnine = "*"
 bs4 = "*"
 lxml = "*"
+macroecon-wrappy = {file = ".", editable = true}
 
 [dev-packages]
 pytest = "*"
 fredapi = "*"
+ipykernel = "*"
 
 [requires]
 python_version = "3.12"

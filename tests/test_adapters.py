@@ -29,3 +29,4 @@ def test_fredapi():
     FredApi.set_wrapper(fred)
     metric = FredApi.get_data('GDP')
     assert type(metric) == Metric
+    assert metric.shape[0] >= 313

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Make avialable all implemented values. 
+Make available all implemented values. 
 """
 
 __author__ = "Jason Beach"

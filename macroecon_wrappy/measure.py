@@ -7,6 +7,8 @@ __author__ = "Jason Beach"
 __version__ = "0.1.0"
 __license__ = "MIT"
 
+from .metric import Metric
+
 import pandas as pd
 
 
@@ -17,32 +19,28 @@ class Measure:
 
     Usage:
         ```
-        measure = Measure(df[['GDP','GDI']])
-        type(measure.data) == pd.DataFrame
-        type(measure.data.index) == "datetime64"
+        metrics = [gdp, gdi]
+        measure = Measure(metrics)
+        type(measure.df()) == pd.DataFrame
+        type(measure.df().index) == "datetime64"
         ```
     Notes:
-        - all data must have a `date` index or be a df that includes a column labeled `date`
-    TODO:add from notes
+        - all data must be of type `Metric` with a `pd.Timestamp` index
     """
-    def __init__(self, df_or_series):
-        self.data = pd.DataFrame()
-        self.add_data(df_or_series)
+    def __init__(self, metric_or_metric_list):
+        self.metrics = []
+        self.add_metric(metric_or_metric_list)
 
-    def add_data(self, df_or_series):
-        """Add data from either DataFrame or Series"""
-        df = self.prepare_input_for_ingest(df_or_series)
-        #self.data.assign(**df)
-        self.data = pd.concat(
-            [self.data, df_or_series], 
-            axis=1, 
-            join='outer'
-        )
+    def add_metric(self, metric_or_metric_list):
+        """Add data from either Metric or list of Metrics"""
+        metric_list = self.prepare_input_for_ingest(metric_or_metric_list)
+        self.metrics.extend(metric_list)
         
-    def prepare_input_for_ingest(self, df_or_series):
+    def prepare_input_for_ingest(self, metric_or_metric_list):
         """Check input to ensure it meets required characteristics to 
         be added as data.
         
+        TODO:put into Metric
         Requirements:
             - all data must either be: 
               + Series with `date` (type timeseries) index or 
@@ -50,28 +48,24 @@ class Measure:
             - data columns must be of type float
             - output as DataFrame with timeseries index
         """
-        if type(df_or_series)==pd.DataFrame:
-            if df_or_series.index.inferred_type == "datetime64":
-                return df_or_series
-            elif 'date' in df_or_series.columns:
-                df_or_series['date'] = pd.to_datetime(df_or_series['date'])
-                df_or_series.index = df_or_series['date']
-                #df_or_series.drop(labels='date')
-                return df_or_series
-            else:
-                raise Exception()
-        elif type(df_or_series)==pd.Series:
-            if df_or_series.index.inferred_type == "datetime64":
-                df = pd.DataFrame(df_or_series)
-                return df
+        data = metric_or_metric_list
+        if isinstance(data, Metric):
+            return [data]
+        elif isinstance(data, list):
+            for item in data:
+                assert isinstance(item, Metric)
+            return data
         else:
-            raise Exception('arg `df_or_series` must be of type DataFrame or Series')
+            raise Exception('arg `metric_or_metric_list` must be of type Metric of list of Metrics')
+        
+    def df(self):
+        return pd.DataFrame(self.metrics)
             
     def to_long(self):
         """Convert data to long-format DataFrame"""
-        cols = self.data.columns
-        tmp = self.data
-        tmp['date'] = df.index
+        cols = self.df().columns
+        tmp = self.df()
+        tmp['date'] = tmp.index
         tmp.reset_index(drop=True, inplace=True)
         tmp = pd.melt(tmp, id_vars='date', value_vars=cols, var_name='grp', value_name='value')
         return tmp
