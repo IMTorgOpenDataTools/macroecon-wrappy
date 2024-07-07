@@ -98,12 +98,7 @@ Extractor - interacts with site to get files and extract data
 ## Roadmap
 
 Data sources
-* ~~nber (Extractor, ...)~~
-  - recessions: https://www.nber.org/research/data/us-business-cycle-expansions-and-contractions
-* ~~treasury, additional frb sites~~
-  - example: https://github.com/bdecon/econ_data/blob/master/APIs/Treasury.ipynb
-  - ~~treasury auction history: https://home.treasury.gov/data/investor-class-auction-allotments~~
-  - Survey of Consumer Finances (SCF): https://www.federalreserve.gov/econres/scfindex.htm
+
 * internet archive (Adapter)
   - explanation of sources: https://stackoverflow.com/questions/33811582/how-to-access-wayback-machine-programmatically
   - internet archive: https://archive.org/developers/internetarchive/quickstart.html
