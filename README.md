@@ -74,10 +74,10 @@ These API-wrappers are supported by this module with Adapters:
 
 * Relation
   - multiple Measures, Epochs, Events related using a mathematical expression
-* Measure line on a graph
+* ~~Measure line on a graph~~
   - (ie consumer inflation) contains multiple Metrics (cpi, core cpi, pce, bpp, etc.)
   - list of Metrics
-  - Metric - continuous timeseries data
+  - ~~Metric - continuous timeseries data~~
     - pd.Series with metadata
 * Epoch polygon on a graph
   - (ie recessions) contain multiple Epochs (expansion, contraction, etc.)
@@ -98,15 +98,14 @@ Extractor - interacts with site to get files and extract data
 ## Roadmap
 
 Data sources
-* nber (Extractor, ...)
+* ~~nber (Extractor, ...)~~
   - recessions: https://www.nber.org/research/data/us-business-cycle-expansions-and-contractions
 * internet archive (Adapter)
   - explanation of sources: https://stackoverflow.com/questions/33811582/how-to-access-wayback-machine-programmatically
   - internet archive: https://archive.org/developers/internetarchive/quickstart.html
   - wayback machine: https://github.com/jsvine/waybackpack
-* yahoo finance (Adapter)
-  - MOVE index: https://finance.yahoo.com/quote/%5EMOVE/history/?period1=1672790400&period2=1701648000
 * us treasury, additional frb sites
+  - example: https://github.com/bdecon/econ_data/blob/master/APIs/Treasury.ipynb
   - treasury home: https://home.treasury.gov/policy-issues/financing-the-government/interest-rate-statistics
   - treasury auction history: https://home.treasury.gov/data/investor-class-auction-allotments
   - 
@@ -114,11 +113,39 @@ Data sources
 * macromicro / trading economics
   - jpm global pmi: https://en.macromicro.me/series/20151/jp-morgan-global-manufacturing-pmi
   - jpm global pmi: https://tradingeconomics.com/world/manufacturing-pmi
+* quandl / nasdaq data link
+  - some is free
+  - api wrapper: https://github.com/Nasdaq/data-link-python
+  - data: https://data.nasdaq.com/search?filters=%5B%22Free%22%5D
 
 
-Wrapper adapters and source extractors
+Functionality
 
+* APIs: https://github.com/bdecon/econ_data/tree/master/APIs
+* good formulas
+    - FixedIncome: https://github.com/PacktPublishing/Mastering-Python-for-Finance-Second-Edition/tree/master
+    - econ: https://github.com/weijie-chen/Econometrics-With-Python/tree/main
+    - online econ: https://python-programming.quantecon.org/intro.html
+* altair graphs
+  - repo: https://github.com/vega/altair
+  - recession bars: 
+    + https://stackoverflow.com/questions/43482055/how-to-shade-a-region-with-altair
+    + https://stackoverflow.com/questions/66820208/altair-python-solid-horizontal-bars-in-the-backgound
+    + https://github.com/vega/altair/issues/2214
+    + https://stackoverflow.com/questions/53093402/how-to-plot-y-axis-bands-in-altair-charts
+    + 
+* metric file storage, PyStore
+  - update with pyarrow
+  - original: https://aroussi.com/post/fast-datastore-for-pandas-time-series-data
+* Wrapper adapters and source extractors
 * plot digitizers
   - https://github.com/echemdb/svgdigitizer
   - https://github.com/peterstangl/svg2data
   - https://github.com/dilawar/PlotDigitizer
+
+
+  Investigate
+
+  * us bank reserves(TOTRESNS), MOVE index, china?
+  * does financial repression lead to higher p/e ratios?
+  * ideas: https://www.bancreek.com/p/us-employment-data-treemap
