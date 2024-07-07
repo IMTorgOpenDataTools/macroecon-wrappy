@@ -100,16 +100,17 @@ Extractor - interacts with site to get files and extract data
 Data sources
 * ~~nber (Extractor, ...)~~
   - recessions: https://www.nber.org/research/data/us-business-cycle-expansions-and-contractions
-* treasury, additional frb sites
+* ~~treasury, additional frb sites~~
   - example: https://github.com/bdecon/econ_data/blob/master/APIs/Treasury.ipynb
-  - treasury home: https://home.treasury.gov/policy-issues/financing-the-government/interest-rate-statistics
-  - treasury auction history: https://home.treasury.gov/data/investor-class-auction-allotments
-  - 
+  - ~~treasury auction history: https://home.treasury.gov/data/investor-class-auction-allotments~~
   - Survey of Consumer Finances (SCF): https://www.federalreserve.gov/econres/scfindex.htm
 * internet archive (Adapter)
   - explanation of sources: https://stackoverflow.com/questions/33811582/how-to-access-wayback-machine-programmatically
   - internet archive: https://archive.org/developers/internetarchive/quickstart.html
   - wayback machine: https://github.com/jsvine/waybackpack
+* treasury, additional frb sites
+  - example: https://github.com/bdecon/econ_data/blob/master/APIs/Treasury.ipynb
+  - treasury home: https://home.treasury.gov/policy-issues/financing-the-government/interest-rate-statistics
 * macromicro / trading economics
   - jpm global pmi: https://en.macromicro.me/series/20151/jp-morgan-global-manufacturing-pmi
   - jpm global pmi: https://tradingeconomics.com/world/manufacturing-pmi
