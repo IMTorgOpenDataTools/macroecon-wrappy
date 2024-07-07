@@ -9,16 +9,15 @@ __license__ = "MIT"
 
 #wrappy
 from macroecon_wrappy.extractors import (
-    NberExtract
+    NberExtract,
+    TreasuryExtract
 )
 #from macroecon_wrappy.metric import Metric
 from macroecon_wrappy.epoch import Epoch
 
 
-
 #sys
 from pathlib import Path
-
 
 
 def test_nber():
@@ -32,3 +31,13 @@ def test_nber():
         result = recessions.df().columns[idx] == col
         results.append(result)
     assert all(results)
+
+def test_treasury():
+    names = ['coupon', 'bill']
+    TreasuryExtract.set_config()
+    coupon_data = TreasuryExtract.get_data(names[0])
+    coupons = Epoch(coupon_data)
+    bill_data = TreasuryExtract.get_data(names[1])
+    bills = Epoch(bill_data)
+    assert coupons.df().shape == (1803, 15)
+    assert bills.df().shape == (4867, 14)
