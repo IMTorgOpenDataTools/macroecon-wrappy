@@ -28,6 +28,16 @@ class Span:
         self.value = span
 
 
+def epoch_row_factory(row):
+    """Factor for creating Span or Event from Epoch row."""
+    diff = row[Epoch._names[1]] == row[Epoch._names[0]]
+    if diff >= Epoch._determine_event_duration_cutoff:
+        return Event(row)
+    else:
+        return Span(row)
+    
+
+
 
 class Epoch:
     """..."""
@@ -35,6 +45,7 @@ class Epoch:
     def __init__(self, df_or_list):
         self._names = ['start', 'end']
         self._span_duration_seconds = 0
+        self._determine_event_duration_cutoff = 0
         mod_df = self.prepare_input_for_ingest(df_or_list)
         self.df_data = mod_df
 
@@ -128,9 +139,9 @@ class Epoch:
             colnames = self._names
             df = self.df()
             row = df[ (df[colnames[0]] < dt) & (df[colnames[1]] > dt) ]
-        #TODO: determiner event of span
-        event = Event(row)
-        return event
+        #TODO: determine event or span
+        item_event_or_span = epoch_row_factory(row)
+        return item_event_or_span
         
     def to_long(self):
         """Convert data to long-format DataFrame"""
