@@ -8,6 +8,7 @@ __version__ = "0.1.0"
 __license__ = "MIT"
 
 from .metric import Metric
+from .epoch import Epoch
 
 import pandas as pd
 
@@ -27,17 +28,35 @@ class Measure:
     Notes:
         - all data must be of type `Metric` with a `pd.Timestamp` index
     """
-    def __init__(self, metric_or_metric_list):
+    def __init__(self, metric_or_metric_list, cycle_epoch=None):
         self.metrics = []
+        self.cycle = pd.DataFrame()
         self.add_metric(metric_or_metric_list)
+        if cycle_epoch:
+            self.set_cycle(cycle_epoch)
 
     def __repr__(self) -> str:
-        return self.df()
+        """Return a string representation."""
+        return self.df(cycyle=True).head().__repr__()
 
     def add_metric(self, metric_or_metric_list):
-        """Add data from either Metric or list of Metrics"""
+        """Add data from either Metric or list of Metrics."""
         metric_list = self.prepare_input_for_ingest(metric_or_metric_list)
         self.metrics.extend(metric_list)
+
+    def set_cycle(self, cycle_epoch):
+        """Set the default cycle for transformations."""
+        if isinstance(cycle_epoch, Epoch):
+            self.cycle = cycle_epoch
+        else:
+            raise Exception('arg `cycle_epoch` must be of type Epoch')
+        
+    def get_cycle(self):
+        """..."""
+        if self.cycle:
+            return self.cycle
+        else:
+            raise Exception('no self.cycle of `Epoch` is available.  use measure.set_cycle(cycle)')
         
     def prepare_input_for_ingest(self, metric_or_metric_list):
         """Check input to ensure it meets required characteristics to 
@@ -61,9 +80,15 @@ class Measure:
         else:
             raise Exception('arg `metric_or_metric_list` must be of type Metric of list of Metrics')
         
-    def df(self):
+    def df(self, cycle=False):
+        """Get combined pd.DataFrame of Metrics, Cycle, etc."""
         df = pd.DataFrame(self.metrics).transpose()
         df.columns = [metric.id if (metric.id not in [None, '']) else f'col-{idx}' for idx, metric in enumerate(self.metrics) ]
+        if cycle and self.cycle:
+            cycle_df = self.get_cycle().df(dates_only=True)
+
+
+
         df.sort_index(ascending=False, inplace=True)
         return df
             
@@ -76,9 +101,12 @@ class Measure:
         tmp = pd.melt(tmp, id_vars='date', value_vars=cols, var_name='grp', value_name='value')
         return tmp
 
-    def to_long_by_cycle(self):
+    def to_long_by_cycle(self, cycle=None):
         """Convert to long-format separated by the business cycle"""
-        #TODO
+        if not cycle:
+            cycle = self.cycle
+        tmp = self.to_long()
+        #self.cycle
         return True
 
 

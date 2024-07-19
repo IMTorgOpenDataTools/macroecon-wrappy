@@ -10,15 +10,18 @@ __license__ = "MIT"
 
 from macroecon_wrappy.metric import Metric
 from macroecon_wrappy.measure import Measure
-from tests.data.test_data import df_series
+from macroecon_wrappy.epoch import Epoch
+from tests.data.test_data import (df_series, df_cycle)
 
 import pandas as pd
 
 
+metric1 = Metric(df_series['value1'])
+metric2 = Metric(df_series['value2'])
+cycle = Epoch(df_cycle)
 
-def test_measure():
-    metric1 = Metric(df_series['value1'])
-    metric2 = Metric(df_series['value2'])
+
+def test_measure_instance():
     measure = Measure([metric1, metric2])
     df = measure.df()
     assert isinstance(df, pd.DataFrame)
@@ -29,5 +32,12 @@ def test_measure():
         results.append(result)
     assert all(results)
     assert isinstance(df.index, pd.core.indexes.datetimes.DatetimeIndex)
+    measure = Measure([metric1, metric2], cycle)
+    assert measure.df(cycle=True).shape == (35,2)
+
+
+def test_measure_transformations():
+    measure = Measure([metric1, metric2], cycle)
     long = measure.to_long()
     assert long.shape == (12,3)
+    #long_cycle = measure.to_long_by_cycle()

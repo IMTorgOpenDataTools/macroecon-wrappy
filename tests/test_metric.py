@@ -27,4 +27,4 @@ def test_metric():
     assert metric1.T.shape == (6,)
     #metric attributes
     assert metric1.title == 'title1'
-    assert metric1.get_metadata() == ['title']
+    assert metric1.get_metadata()['title'] == 'title1'

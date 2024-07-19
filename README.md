@@ -2,7 +2,7 @@
 
 Economics Wrapper for data across multiple domains and sources (FRED, BEA, BLS, IPUMS, etc.).  The structures allow for smooth workflows for data ingest, transformations, graphing, and modeling.  
 
-This module is used independently of any API-wrapper.  However, some wrappers are suggested and used in the examples.  An API-wrapper Adapter interface is available for improved integration with this module's primary classes.  Where API-wrapper functionality falls short, this module makes direct connections to the site. 
+This module is used independently of any particular API-wrapper.  However, some wrappers are suggested and used in the examples.  An API-wrapper `Adapter` interface is available for improved integration with this module's primary classes.  Where no API-wrapper functionality exists, such as directly downloading files or site scraping, this module makes direct connections to a site by implementing the `Extractor` interface.
 
 
 ## Install and Configure
@@ -97,6 +97,12 @@ Extractor - interacts with site to get files and extract data
 
 ## Roadmap
 
+* ~~Span of duration_days == 0 is Event~~
+* Adapters and Extractors should enforce output of 
+  - ?list of dicts, 
+  - with opinionated methods for how to use with data structures (Span, Metric, etc.)
+
+
 Data sources
 
 * internet archive (Adapter)
@@ -138,10 +144,3 @@ Functionality
   - https://github.com/echemdb/svgdigitizer
   - https://github.com/peterstangl/svg2data
   - https://github.com/dilawar/PlotDigitizer
-
-
-  Investigate
-
-  * us bank reserves(TOTRESNS), MOVE index, china?
-  * does financial repression lead to higher p/e ratios?
-  * ideas: https://www.bancreek.com/p/us-employment-data-treemap

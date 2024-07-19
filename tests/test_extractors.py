@@ -27,7 +27,7 @@ def test_nber():
     recessions = Epoch(data)
     assert recessions.df().shape == (35,2)
     results = []
-    for idx, col in enumerate(['peak','trough']):
+    for idx, col in enumerate(['start', 'end']):
         result = recessions.df().columns[idx] == col
         results.append(result)
     assert all(results)
@@ -35,9 +35,7 @@ def test_nber():
 def test_treasury():
     names = ['coupon', 'bill']
     TreasuryExtract.set_config()
-    coupon_data = TreasuryExtract.get_data(names[0])
-    coupons = Epoch(coupon_data)
-    bill_data = TreasuryExtract.get_data(names[1])
-    bills = Epoch(bill_data)
-    assert coupons.df().shape == (1803, 15)
-    assert bills.df().shape == (4867, 14)
+    coupons_df = TreasuryExtract.get_data(names[0])
+    bills_df = TreasuryExtract.get_data(names[1])
+    assert coupons_df.shape == (1803, 15)
+    assert bills_df.shape == (4867, 14)
