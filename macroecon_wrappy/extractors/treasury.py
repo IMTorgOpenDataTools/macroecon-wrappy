@@ -24,7 +24,7 @@ class UsTreasuryExtractor(ExtractorInterface):
 
     _metadata_df = pd.DataFrame()
 
-    def set_config(self):
+    def set_config(self, auth):
         """Set the authenticated wrapper."""
         self.urls = {
             'coupon-2000': {'url':'https://home.treasury.gov/system/files/276/Website-PDO-4-A-Coupons-Jan-2000-Sep%202009.xls',
@@ -36,9 +36,13 @@ class UsTreasuryExtractor(ExtractorInterface):
             'bill-2009': {'url':'https://home.treasury.gov/system/files/276/June-7-2024-IC-Bills.xls',
                           'cols': ['issue date', 'security term', 'auction high rate %', 'cusip', 'maturity date', 'total issue', 'federal reserve banks', 'depository institutions', 'individuals', 'dealers and brokers', 'pension and retirement funds and ins. co.', 'investment funds', 'foreign and international', 'other']}
         }
+        self.wrapper_name = 'treasury'
+        self.cache_path = None
+        self.cache_file = None
+        self._set_cache_path(auth, self.wrapper_name)
     
-    def get_data(self, name):
-        """Get data from API and return object of class Metric."""
+    def get_raw(self, name):
+        """Get data from API and return object of class DataFrame."""
         keys = list(self.urls.keys())
         tgt_keys = [key for key in keys if key.split('-')[0] == name]
         results = pd.DataFrame()
@@ -51,3 +55,7 @@ class UsTreasuryExtractor(ExtractorInterface):
             results = pd.concat([df, results], ignore_index=True, axis=0)
             results.dropna(subset=['issue date'], inplace=True)
         return results
+    
+    def get_data(self, *args, **kwargs):
+        """Get data from URL and return object of different classes."""
+        raise NotImplementedError("Implement this for APi-wrapper")

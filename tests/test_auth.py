@@ -16,8 +16,11 @@ from pathlib import Path
 
 
 def test_auth():
-    filepath = Path('tests/data/test-SECRETS.yaml')
-    auth = Auth(filepath)
-    auth.load()
+    secrets_path = Path('tests/data/test-SECRETS.yaml')
+    cache_path = Path('tests/tmp/')
+    auth = Auth(secrets_path, cache_path)
+    auth.load_secrets()
     assert 'API_KEY_FED' in auth.data.keys()
     assert auth.data['API_KEY_FED'] == '<add-key-here>'
+    assert auth.cache_path == Path('tests/tmp')
+    assert auth.get_cache_sources().__len__() == 0

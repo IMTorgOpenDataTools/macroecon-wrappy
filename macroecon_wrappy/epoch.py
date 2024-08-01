@@ -14,24 +14,31 @@ import numpy as np
 from datetime import datetime
 
 
-class Event:
+
+class TimePeriod:
     """..."""
 
-    def __init__(self, event):
-        self.value = event
+    def __init__(self, item):
+        self.value = item
+
+    def __repr__(self) -> str:
+        return str(self.value)
 
 
-class Span:
+class Event(TimePeriod):
     """..."""
+    pass
 
-    def __init__(self, span):
-        self.value = span
+
+class Span(TimePeriod):
+    """..."""
+    pass
 
 
 def epoch_row_factory(row):
     """Factor for creating Span or Event from Epoch row."""
-    diff = row[Epoch._names[1]] == row[Epoch._names[0]]
-    if diff >= Epoch._determine_event_duration_cutoff:
+    diff = (row[Epoch._names[1]] - row[Epoch._names[0]]).total_seconds()
+    if diff <= Epoch._determine_event_duration_cutoff_seconds:
         return Event(row)
     else:
         return Span(row)
@@ -41,11 +48,11 @@ def epoch_row_factory(row):
 
 class Epoch:
     """..."""
+    _names = ['start', 'end']
+    _span_duration_seconds = 0
+    _determine_event_duration_cutoff_seconds = 0
 
     def __init__(self, df_or_list):
-        self._names = ['start', 'end']
-        self._span_duration_seconds = 0
-        self._determine_event_duration_cutoff = 0
         mod_df = self.prepare_input_for_ingest(df_or_list)
         self.df_data = mod_df
 
@@ -83,7 +90,7 @@ class Epoch:
             raise Exception('arg `df` must be of type pd.DataFrame with at least 1 row and two columns')
         if not list(df.columns) == self._names:
             print(f'first two columns will be renamed: {self._names}')
-            for idx, col in enumerate(df.columns):
+            for idx, col in enumerate(df.columns[:len(self._names)].tolist()):
                 colname = self._names[idx]
                 df.rename(columns={ col: colname }, inplace = True)
                 df[colname] = pd.to_datetime(df[colname])
@@ -128,7 +135,7 @@ class Epoch:
             dt = idx_or_date
             colnames = self._names
             df = self.df()
-            row = df[ (df[colnames[0]] < dt) & (df[colnames[1]] > dt) ]
+            row = df[ (df[colnames[0]] < dt) & (df[colnames[1]] > dt) ].iloc[0]
         elif isinstance(idx_or_date, str):
             try:
                 dt_str = idx_or_date
@@ -138,8 +145,7 @@ class Epoch:
                 print(e)
             colnames = self._names
             df = self.df()
-            row = df[ (df[colnames[0]] < dt) & (df[colnames[1]] > dt) ]
-        #TODO: determine event or span
+            row = df[ (df[colnames[0]] < dt) & (df[colnames[1]] > dt) ].iloc[0]
         item_event_or_span = epoch_row_factory(row)
         return item_event_or_span
         

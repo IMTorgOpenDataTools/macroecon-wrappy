@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 """
 fredapi Adapter 
+
+Note:
+* simple AdapterInterface cache is used
 """
 
 __author__ = "Jason Beach"
@@ -18,12 +21,20 @@ class FredApiAdapter(AdapterInterface):
 
     _metadata_df = pd.DataFrame()
 
-    def set_wrapper(self, wrapper):
+    def set_wrapper(self, auth, wrapper):
         """Set the authenticated wrapper."""
-        self.wrapper = wrapper
-    
+        self.wrapper = wrapper(api_key=auth.data['API_KEY_FED'])
+        self.wrapper_name = 'fredapi'
+        self._set_cache_path(auth, self.wrapper_name)
+
     def get_data(self, seriesId):
         """Get data from API and return object of class Metric."""
+        #check if already available
+        pd_series = self._get_data_if_cached(key=seriesId)
+        if pd_series:
+            return pd_series
+        
+        #o/w get data
         pd_series = self.wrapper.get_series(seriesId)
         series_meta_dict = self.get_metadata(seriesId)
         if not series_meta_dict:
@@ -46,8 +57,10 @@ class FredApiAdapter(AdapterInterface):
         metric.t = pd_series.index.max() - pd_series.index.min()
         metric.units = series_meta_dict['units']
         metric.units_short = series_meta_dict['units_short']
-
         metric.set_metadata(**series_meta_dict)
+
+        #cache and return results
+        self._cache_data(seriesId, metric)
         return metric
     
     def get_metadata(self, seriesId):

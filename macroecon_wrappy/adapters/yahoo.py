@@ -3,8 +3,9 @@
 yahoo finance Adapter 
 
 Note:
+* yfinance maintains its own cache
 * Use the abstract Adapter methods or access the wrapper directly with: `self.wrapper`
-* it is important to note that the 1m data is only retrievable for the last 7 days, 
+* it is important to note that the 1m (min) data is only retrievable for the last 7 days, 
 and anything intraday (interval <1d) only for the last 60 days.
 * [yahooquery](https://github.com/dpguthrie/yahooquery) may be a faster alternative
 """
@@ -26,21 +27,27 @@ class CachedLimiterSession(CacheMixin, LimiterMixin, Session):
     pass
 
 
+
+
 class YahooAdapter(AdapterInterface):
     """Interface for wrapper adapter
     
     """
 
-    def set_wrapper(self, wrapper):
-        """Set the authenticated wrapper."""
+    def set_wrapper(self, auth, wrapper):
+        """Set the authenticated wrapper and cache."""
         self.wrapper = wrapper
+        self.wrapper_name = 'yfinance'
+        self.cache_file = auth.cache_path / f"{self.wrapper_name}" / f"{self.wrapper_name}.cache"
         session = CachedLimiterSession(
             limiter=Limiter(RequestRate(2, Duration.SECOND*5)),  # max 2 requests per 5 seconds
             bucket_class=MemoryQueueBucket,
-            backend=SQLiteCache("yfinance.cache"),
+            backend=SQLiteCache(self.cache_file),
         )
         #session.headers['User-agent'] = 'my-program/1.0'
         self.session = session
+        self._set_cache_path(auth, self.wrapper_name)
+        
 
     def get_data(self, **kwargs):
         """Get average (high, low) data from API and return object of class Metric.
@@ -92,3 +99,17 @@ class YahooAdapter(AdapterInterface):
 
         metric.set_metadata(**tkr.info)
         return metric
+    
+    def _set_cache_path(self, auth, name):
+        """Set the directory (and file) to use as cache."""
+        cache_path = auth.cache_path / name
+        cache_path.mkdir(parents=False, exist_ok=True)
+        self.wrapper.set_tz_cache_location(cache_path)
+
+    def _cache_data(self, key, data):
+        """Save data to cache."""
+        raise NotImplementedError("Cache maintained with API-wrapper")
+
+    def _get_data_if_cached(self, key):
+        """Check if data is cached and retrieve if so."""
+        raise NotImplementedError("Cache maintained with API-wrapper")

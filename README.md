@@ -99,8 +99,11 @@ Extractor - interacts with site to get files and extract data
 
 * ~~Span of duration_days == 0 is Event~~
 * Adapters and Extractors should enforce output of 
-  - ?list of dicts, 
-  - with opinionated methods for how to use with data structures (Span, Metric, etc.)
+  - ~~?list of dicts,~~ 
+  - ~~with opinionated methods for how to use with data structures (Span, Metric, etc.)~~
+  - ~~return raw structure (dict, pd.DataFrame)~~
+  - ~~return macroecon structure (Measure, Epoch, Event, Geom)~~
+  - ~~enable caching of data using module, top-level config, and work with api-wrappers' own caching~~
 
 
 Data sources

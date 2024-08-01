@@ -14,6 +14,7 @@ from macroecon_wrappy.adapters import (
     YahooFin
 )
 from macroecon_wrappy.metric import Metric
+from macroecon_wrappy.utils import delete_folder
 
 #external
 from fredapi import Fred
@@ -24,20 +25,26 @@ from pathlib import Path
 
 
 
-def test_fredapi():
-    filepath = Path('SECRETS.yaml')     # <<< must use actual api key
-    auth = Auth(filepath)
-    auth.load()
-    fred = Fred(api_key=auth.data['API_KEY_FED'])
+#setup
+secrets_path = Path('SECRETS.yaml')     # <<< must use actual api key
+cache_path = Path('./tests/tmp')
+auth = Auth(secrets_path, cache_path)
+auth.load_secrets()
 
-    FredApi.set_wrapper(fred)
+
+def test_fredapi():
+    wd = cache_path / 'fredapi'
+    delete_folder(wd)
+    FredApi.set_wrapper(auth, Fred)
     metric = FredApi.get_data('GDP')
     assert isinstance(metric, Metric)
     assert metric.shape[0] >= 313
     assert metric.title == 'Gross Domestic Product'
 
 def test_yahoo():
-    YahooFin.set_wrapper(yf)
+    wd = cache_path / 'yfinance'
+    delete_folder(wd)
+    YahooFin.set_wrapper(auth, yf)
     metric = YahooFin.get_data(tickers='MSFT')
     assert isinstance(metric, Metric)
     assert metric.id == 'MSFT'
