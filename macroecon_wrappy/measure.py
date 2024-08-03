@@ -80,15 +80,10 @@ class Measure:
         else:
             raise Exception('arg `metric_or_metric_list` must be of type Metric of list of Metrics')
         
-    def df(self, cycle=False):
+    def df(self):
         """Get combined pd.DataFrame of Metrics, Cycle, etc."""
         df = pd.DataFrame(self.metrics).transpose()
         df.columns = [metric.id if (metric.id not in [None, '']) else f'col-{idx}' for idx, metric in enumerate(self.metrics) ]
-        if cycle and self.cycle:
-            cycle_df = self.get_cycle().df(dates_only=True)
-
-
-
         df.sort_index(ascending=False, inplace=True)
         return df
             
@@ -96,9 +91,9 @@ class Measure:
         """Convert data to long-format DataFrame"""
         cols = self.df().columns
         tmp = self.df()
-        tmp['date'] = tmp.index
-        tmp.reset_index(drop=True, inplace=True)
-        tmp = pd.melt(tmp, id_vars='date', value_vars=cols, var_name='grp', value_name='value')
+        tmp.reset_index(inplace=True)
+        tmp = pd.melt(tmp, id_vars='timestamp', value_vars=cols, var_name='grp', value_name='value')
+        tmp.set_index('timestamp', inplace=True)
         return tmp
 
     def to_long_by_cycle(self, cycle=None):

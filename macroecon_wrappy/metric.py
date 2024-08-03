@@ -56,6 +56,8 @@ class Metric(pd.Series):
         self.units = None
         self.units_short = None
 
+        self.index.set_names(['timestamp'], inplace=True)
+
     def set_metadata(self, **kwargs):
         for key, value in kwargs.items():
             if key in dir(self):

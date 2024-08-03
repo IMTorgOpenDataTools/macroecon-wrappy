@@ -15,12 +15,15 @@ requests-ratelimiter = "*"
 pyrate-limiter = "*"
 macroecon-wrappy = {file = ".", editable = true}
 xlrd = "*"
+beautifulsoup4 = "*"
+altair = {extras = ["all"], version = "*"}
 
 [dev-packages]
 pytest = "*"
 fredapi = "*"
 ipykernel = "*"
 yfinance = "*"
+waybackpack = "*"
 
 [requires]
 python_version = "3.12"

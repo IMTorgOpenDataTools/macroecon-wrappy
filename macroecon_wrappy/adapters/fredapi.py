@@ -79,6 +79,8 @@ class FredApiAdapter(AdapterInterface):
             metadata_df = self.wrapper.search(seriesId)
             new_metadata_df = pd.concat([self._metadata_df, metadata_df], axis=0).drop_duplicates()
             self._metadata_df = new_metadata_df
+        subset = self._metadata_df[self._metadata_df.id==seriesId]
+        #TODO: is this necessary???
         if subset.shape[0] == 1:
             series_meta_dict = subset.iloc[0].to_dict()
             return series_meta_dict

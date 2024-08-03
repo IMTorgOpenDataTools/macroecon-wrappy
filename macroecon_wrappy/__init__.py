@@ -11,6 +11,7 @@ __license__ = "MIT"
 from .auth import Auth
 from .metric import Metric
 from .measure import Measure
+from .epoch import Epoch
 
 
 

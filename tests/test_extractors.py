@@ -11,7 +11,7 @@ __license__ = "MIT"
 from macroecon_wrappy.auth import Auth
 from macroecon_wrappy.extractors import (
     NberExtract,
-    TreasuryExtract
+    TreasuryExtract,
 )
 #from macroecon_wrappy.metric import Metric
 from macroecon_wrappy.epoch import Epoch

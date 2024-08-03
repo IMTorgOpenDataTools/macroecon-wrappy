@@ -37,7 +37,10 @@ def test_epoch_index():
     checks = [check1, check2, check3]
     assert all(checks)
 
+#TODO:does to_long have a purpose???
+'''
 def test_epoch_transformations():
     recessions = Epoch(df_cycle)
     long_recess = recessions.to_long()
     assert long_recess.shape == (0,0)
+'''

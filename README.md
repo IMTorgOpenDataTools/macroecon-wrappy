@@ -19,6 +19,13 @@ Select a source and associated wrapper.  For this example, we will use the [fred
 
 Set the authentication key for the wrapper.
 
+Add external libraries using the `--dev` argument, such as:
+
+```bash
+pipenv install --dev waybackpack
+```
+
+
 ```python
 <TODO: add from notebooks/test.ipynb>
 ```
@@ -104,6 +111,7 @@ Extractor - interacts with site to get files and extract data
   - ~~return raw structure (dict, pd.DataFrame)~~
   - ~~return macroecon structure (Measure, Epoch, Event, Geom)~~
   - ~~enable caching of data using module, top-level config, and work with api-wrappers' own caching~~
+* what is load.py doing?  dependencies: RM_sources
 
 
 Data sources
@@ -112,6 +120,8 @@ Data sources
   - explanation of sources: https://stackoverflow.com/questions/33811582/how-to-access-wayback-machine-programmatically
   - internet archive: https://archive.org/developers/internetarchive/quickstart.html
   - wayback machine: https://github.com/jsvine/waybackpack
+* hindenburg
+  - headline: https://hindenburgresearch.com/
 * treasury, additional frb sites
   - example: https://github.com/bdecon/econ_data/blob/master/APIs/Treasury.ipynb
   - treasury home: https://home.treasury.gov/policy-issues/financing-the-government/interest-rate-statistics

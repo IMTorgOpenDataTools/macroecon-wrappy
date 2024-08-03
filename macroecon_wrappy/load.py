@@ -8,8 +8,8 @@ __version__ = "0.1.0"
 __license__ = "MIT"
 
 
-from .sources.nber import url_recession_bars
-from .sources import fred
+from .RM_sources.nber import url_recession_bars
+from .RM_sources import fred
 
 import pandas as pd
 import requests
