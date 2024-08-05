@@ -20,6 +20,10 @@ alt.data_transformers.disable_max_rows()
 
 
 
+def graph_cycle(df_or_measure, cols=[]):
+    """..."""
+
+
 def graph_ts_js(df_or_measure, cols=[], recession_bars=True, log_scale='xy', interval_selection=True, conf_region=False, height=3, width=6, type='js', return_type=False):
     """Create a timeseries graph with typical econometric characteristics.
     Notes:

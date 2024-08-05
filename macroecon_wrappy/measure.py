@@ -11,6 +11,9 @@ from .metric import Metric
 from .epoch import Epoch
 
 import pandas as pd
+import numpy as np
+
+from copy import deepcopy
 
 
 class Measure:
@@ -37,12 +40,23 @@ class Measure:
 
     def __repr__(self) -> str:
         """Return a string representation."""
-        return self.df(cycyle=True).head().__repr__()
+        return self.df().head().__repr__()
 
     def add_metric(self, metric_or_metric_list):
         """Add data from either Metric or list of Metrics."""
         metric_list = self.prepare_input_for_ingest(metric_or_metric_list)
-        self.metrics.extend(metric_list)
+        result_metrics = [Metric(metric.sort_index(ascending=False)) for metric in metric_list]
+        self.metrics.extend(result_metrics)
+
+    def get_metric(self, metric_lst=[]):
+        """Return a specific metric or all metrics (if metric is None)."""
+        if not isinstance(metric_lst, list):
+            raise Exception('metric must be of type list')
+        if len(metric_lst)==0:
+            return self.metrics
+        elif len(metric_lst)>0:
+            result_metrics = [Metric(metric.sort_index(ascending=False)) for metric in self.metrics if metric in metric_lst]
+            return result_metrics
 
     def set_cycle(self, cycle_epoch):
         """Set the default cycle for transformations."""
@@ -83,12 +97,28 @@ class Measure:
     def df(self):
         """Get combined pd.DataFrame of Metrics, Cycle, etc."""
         df = pd.DataFrame(self.metrics).transpose()
-        df.columns = [metric.id if (metric.id not in [None, '']) else f'col-{idx}' for idx, metric in enumerate(self.metrics) ]
+        #df.columns = [metric.id if (metric.id not in [None, '']) else f'col-{idx}' for idx, metric in enumerate(self.metrics) ]
+        df.columns = [metric.id if (hasattr(metric, 'id') and getattr(metric, 'id') not in [None, '']) else f'col-{idx}' for idx, metric in enumerate(self.metrics) ]
         df.sort_index(ascending=False, inplace=True)
         return df
-            
+    
+    def subset_by_time(self, start, end):
+        """Subset the Metrics by start, end Timestamps to produce new Measure."""
+        start = pd.Timestamp(start)
+        end = pd.Timestamp(end)
+        #msk = (self.df().index > start) & (self.df().index < end)
+        results = []
+        for metric in self.metrics:
+            metric.sort_index(ascending=False, inplace=True)
+            msk = (metric.index > start) & (metric.index < end)
+            new_metric = Metric(metric[msk])
+            if new_metric.shape[0]>0:
+                results.append( new_metric )
+        measure = Measure(results)
+        return measure
+
     def to_long(self):
-        """Convert data to long-format DataFrame"""
+        """Convert data to long-format DataFrame."""
         cols = self.df().columns
         tmp = self.df()
         tmp.reset_index(inplace=True)
@@ -97,12 +127,45 @@ class Measure:
         return tmp
 
     def to_long_by_cycle(self, cycle=None):
-        """Convert to long-format separated by the business cycle"""
+        """Get list of pd.DataFrames separated by the business cycles."""
         if not cycle:
-            cycle = self.cycle
-        tmp = self.to_long()
-        #self.cycle
-        return True
+            if self.cycle:
+                cycle = self.cycle
+            else:
+                raise Exception('no cycle provided')
+        results = []
+        for idx,event in enumerate(cycle.get_items()):
+            event = deepcopy(event)
+            if idx==0:
+                start = pd.to_datetime(self.df().index).min()
+            event.start = start
+            #subset index by cycle start,end
+            subset_measure = self.subset_by_time(event.start, event.end)
+            if len(subset_measure.get_metric())==0:
+                pass
+            else:
+                #normalize(0,1) each column
+                normalized_metrics = [metric.normalize_values() for metric in subset_measure.get_metric()]
+                normalized_subset_long = Measure(normalized_metrics).to_long()
+                #normalize x-axis
+                normalized_subset_long.reset_index(inplace=True)
+                normalized_subset_long['timestamp']  = pd.to_datetime(normalized_subset_long['timestamp'] )
+                normalized_subset_long['start']  = pd.to_datetime( event.start )
+                normalized_subset_long['diff_days'] = (normalized_subset_long['timestamp']-normalized_subset_long['start']).dt.days.astype('int')
+                normalized_subset_long['end'] =  pd.to_datetime( event.end )
+                normalized_subset_long['end'] = (normalized_subset_long['end'] - normalized_subset_long['start']).dt.days.astype('int')
+                normalized_subset_long['diff_pct'] = np.where(
+                    normalized_subset_long['diff_days'] < 1, 
+                    normalized_subset_long['diff_days'], 
+                    normalized_subset_long['diff_days'] / normalized_subset_long['end']
+                )
+                #wrap-up
+                normalized_subset_long.drop(labels=['start','end'], axis=1, inplace=True)
+                normalized_subset_long['cycle'] = event.name
+                results.append(normalized_subset_long)
+            start = event.end
+        result_df = pd.concat(results, axis=0)
+        return result_df
 
 
     def set_metadata(self):

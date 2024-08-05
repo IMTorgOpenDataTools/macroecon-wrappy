@@ -11,6 +11,7 @@ __license__ = "MIT"
 
 import pandas as pd
 import numpy as np
+
 from datetime import datetime
 
 
@@ -20,6 +21,8 @@ class TimePeriod:
 
     def __init__(self, item):
         self.value = item
+        for k,v in item.to_dict().items():
+            setattr(self, k, v)
 
     def __repr__(self) -> str:
         return str(self.value)
@@ -41,14 +44,17 @@ def epoch_row_factory(row):
     if diff <= Epoch._determine_event_duration_cutoff_seconds:
         return Event(row)
     else:
-        return Span(row)
+        dt = f'{row.start.year}/{row.start.month}/{row.start.day} - {row.end.year}/{row.end.month}/{row.end.day}'
+        span = Span(row)
+        span.name = f'span-{dt}'
+        return span
     
 
 
 
 class Epoch:
     """..."""
-    _names = ['start', 'end']
+    _names = ['start', 'end', 'name']
     _span_duration_seconds = 0
     _determine_event_duration_cutoff_seconds = 0
 
@@ -90,10 +96,11 @@ class Epoch:
             raise Exception('arg `df` must be of type pd.DataFrame with at least 1 row and two columns')
         if not list(df.columns) == self._names:
             print(f'first two columns will be renamed: {self._names}')
-            for idx, col in enumerate(df.columns[:len(self._names)].tolist()):
+            for idx, col in enumerate(df.columns[:len(self._names[:2])].tolist()):
                 colname = self._names[idx]
                 df.rename(columns={ col: colname }, inplace = True)
                 df[colname] = pd.to_datetime(df[colname])
+            df[self._names[2]] = ''
         #reset config
         df.reset_index(
             drop=True, 
@@ -148,7 +155,14 @@ class Epoch:
             row = df[ (df[colnames[0]] < dt) & (df[colnames[1]] > dt) ].iloc[0]
         item_event_or_span = epoch_row_factory(row)
         return item_event_or_span
-        
+    
+    def get_items(self):
+        """Generator to get each item (Event / Span) from the Epoch."""
+        rows = self.df().shape[0]
+        for row_idx in range(rows):
+            item_event_or_span = self.idx(row_idx)
+            yield item_event_or_span
+
     def to_long(self):
         """Convert data to long-format DataFrame"""
         cols = self._names

@@ -9,7 +9,9 @@ __license__ = "MIT"
 
 
 import pandas as pd
+from sklearn.preprocessing import normalize
 
+from copy import deepcopy
 
 class Metric(pd.Series):
     """Series object with meta-data.
@@ -59,10 +61,30 @@ class Metric(pd.Series):
         self.index.set_names(['timestamp'], inplace=True)
 
     def set_metadata(self, **kwargs):
+        """Set metadata for the Metric.
+        
+        TODO: 
+          - currently, when a pd.Series method is called, it returns a pd.Series
+          - instead, apply a decorator to each method, here, so that the decorator will return the pd.Series as a Metric
+          - ref: https://stackoverflow.com/questions/2998969/how-to-make-every-class-method-call-a-specified-method-before-execution?rq=3
+        """
         for key, value in kwargs.items():
             if key in dir(self):
                 setattr(self, key, value)
             self._metadata[key] = value
 
     def get_metadata(self):
+        """Get metadata."""
         return self._metadata
+    
+    def normalize_values(self, fun=None):
+        """Apply normalization function and get deep, new Metric."""
+        def minmax(vec):
+            return (vec-vec.min())/(vec.max()-vec.min())
+
+        if not fun:
+            fun = minmax
+        metric = deepcopy(self)
+        new_metric = Metric(fun(metric))
+        return new_metric
+        

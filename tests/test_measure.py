@@ -14,6 +14,7 @@ from macroecon_wrappy.epoch import Epoch
 from tests.data.test_data import (df_series, df_cycle)
 
 import pandas as pd
+import numpy as np
 
 
 metric1 = Metric(df_series['value1'])
@@ -41,4 +42,9 @@ def test_measure_transformations():
     measure.to_long()
     assert measure.to_long().shape == (12,2)
     assert measure.to_long().index.name == 'timestamp'
-    #long_cycle = measure.to_long_by_cycle()
+
+def test_measure_cycle_transformations():
+    measure = Measure([metric1, metric2], epoch)
+    result_df = measure.to_long_by_cycle()
+    assert result_df.shape == (26,6)
+    assert result_df.timestamp.values[0] == np.datetime64('1950-01-01')

@@ -2,6 +2,7 @@
 url = "https://pypi.org/simple"
 verify_ssl = true
 name = "pypi"
+skip_lock = true
 
 [packages]
 pandas = "*"
@@ -17,6 +18,7 @@ macroecon-wrappy = {file = ".", editable = true}
 xlrd = "*"
 beautifulsoup4 = "*"
 altair = {extras = ["all"], version = "*"}
+scikit-learn = "*"
 
 [dev-packages]
 pytest = "*"

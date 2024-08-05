@@ -112,14 +112,20 @@ Extractor - interacts with site to get files and extract data
   - ~~return macroecon structure (Measure, Epoch, Event, Geom)~~
   - ~~enable caching of data using module, top-level config, and work with api-wrappers' own caching~~
 * what is load.py doing?  dependencies: RM_sources
+* [awesome quant](https://github.com/wilsonfreitas/awesome-quant?tab=readme-ov-file#python)
 
 
-Data sources
+### Data sources: Adapter, Extractor
 
-* internet archive (Adapter)
-  - explanation of sources: https://stackoverflow.com/questions/33811582/how-to-access-wayback-machine-programmatically
-  - internet archive: https://archive.org/developers/internetarchive/quickstart.html
-  - wayback machine: https://github.com/jsvine/waybackpack
+* [various APIs](https://github.com/bdecon/econ_data/tree/master/APIs)
+  - useful sources: Energy Information Administration (EIA), treasury 
+  - additional: IMF, census, UN Comm(odity)Trade,
+* [datareader](https://github.com/pydata/pandas-datareader/tree/main/pandas_datareader)
+  - list of [sources](https://pydata.github.io/pandas-datareader/stable/remote_data.html#remote-data-tiingo)
+  - free api: [enigma](https://www.enigma.com/), [econdb](https://www.econdb.com/)
+  - useful sources: tsp, worldbank, oecd, eurostat, fama/french, ...
+* ~~internet archive (Adapter)~~
+  - need better text integration with plots
 * hindenburg
   - headline: https://hindenburgresearch.com/
 * treasury, additional frb sites
@@ -134,21 +140,27 @@ Data sources
   - data: https://data.nasdaq.com/search?filters=%5B%22Free%22%5D
 
 
-Functionality
+### Functionality: graphs, digitizers, transformations, cache / storage, etc.
 
-* APIs: https://github.com/bdecon/econ_data/tree/master/APIs
-* good formulas
-    - FixedIncome: https://github.com/PacktPublishing/Mastering-Python-for-Finance-Second-Edition/tree/master
-    - econ: https://github.com/weijie-chen/Econometrics-With-Python/tree/main
-    - online econ: https://python-programming.quantecon.org/intro.html
+* [finplot](https://github.com/highfestiva/finplot)
+* fixed income
+  - [rates](https://github.com/attack68/rateslib)
+  - [financepy](https://github.com/domokane/FinancePy)
+  - [book code](https://github.com/PacktPublishing/Mastering-Python-for-Finance-Second-Edition/tree/master)
+* equities
+  - [ta-lib](https://github.com/TA-Lib/ta-lib-python)
+* economics
+  - [econ](https://github.com/weijie-chen/Econometrics-With-Python/tree/main)
+  - [online econ](https://python-programming.quantecon.org/intro.html)
 * altair graphs
   - repo: https://github.com/vega/altair
-  - recession bars: 
-    + https://stackoverflow.com/questions/43482055/how-to-shade-a-region-with-altair
-    + https://stackoverflow.com/questions/66820208/altair-python-solid-horizontal-bars-in-the-backgound
-    + https://github.com/vega/altair/issues/2214
-    + https://stackoverflow.com/questions/53093402/how-to-plot-y-axis-bands-in-altair-charts
-    + 
+  - [candlestick](https://altair-viz.github.io/gallery/candlestick_chart.html)
+  - [update after creation](https://stackoverflow.com/questions/72380726/configure-x-axis-limits-after-chart-creation)
+  - ~~shaded regions and recession bars: ~~
+    + ~~[vertical](https://stackoverflow.com/questions/43482055/how-to-shade-a-region-with-altair)~~
+    + [horizonal](https://stackoverflow.com/questions/66820208/altair-python-solid-horizontal-bars-in-the-backgound)
+    + [bars](https://github.com/vega/altair/issues/2214)
+    + [discussion](https://stackoverflow.com/questions/53093402/how-to-plot-y-axis-bands-in-altair-charts)
 * metric file storage, PyStore
   - update with pyarrow
   - original: https://aroussi.com/post/fast-datastore-for-pandas-time-series-data
