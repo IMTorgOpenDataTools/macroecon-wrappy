@@ -15,6 +15,39 @@ import numpy as np
 from datetime import datetime
 
 
+def yearsago(years, from_date=None):
+    """Years ago from some date."""
+    if from_date is None:
+        from_date = datetime.now()
+    try:
+        return from_date.replace(year=from_date.year - years)
+    except ValueError:
+        # Must be 2/29!
+        assert from_date.month == 2 and from_date.day == 29 # can be removed
+        return from_date.replace(month=2, day=28,
+                                 year=from_date.year-years)
+
+
+def time_diff(begin, end=None, units='months', pretty=True):
+    """Number of years between two dates.
+    ref: https://stackoverflow.com/questions/765797/convert-timedelta-to-years
+    """
+    if end is None:
+        end = datetime.now()
+    result = None
+    num_years = (end - begin).days / 365.2425
+    if units == 'months':
+        num_months = num_years * 12
+        result = num_months
+    elif units=='years':
+        num_years = int(num_years)
+        if begin > yearsago(num_years, end):
+            result = num_years - 1
+        else:
+            result = num_years
+    return round(result, 2)
+
+
 
 class TimePeriod:
     """..."""
@@ -45,8 +78,9 @@ def epoch_row_factory(row):
         return Event(row)
     else:
         dt = f'{row.start.year}/{row.start.month}/{row.start.day} - {row.end.year}/{row.end.month}/{row.end.day}'
+        diff_months = time_diff(row.start, row.end)
         span = Span(row)
-        span.name = f'span-{dt}'
+        span.name = f'{diff_months} mo | {dt}'
         return span
     
 

@@ -26,6 +26,9 @@ fredapi = "*"
 ipykernel = "*"
 yfinance = "*"
 waybackpack = "*"
+ta = "*"
+requests-html = "*"
+pandas-ta = "*"
 
 [requires]
 python_version = "3.12"

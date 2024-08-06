@@ -148,6 +148,8 @@ Extractor - interacts with site to get files and extract data
   - [financepy](https://github.com/domokane/FinancePy)
   - [book code](https://github.com/PacktPublishing/Mastering-Python-for-Finance-Second-Edition/tree/master)
 * equities
+  - [pandas-ta](https://github.com/twopirllc/pandas-ta)
+    - [solve issue](https://github.com/TA-Lib/ta-lib-python/issues/667)
   - [ta-lib](https://github.com/TA-Lib/ta-lib-python)
 * economics
   - [econ](https://github.com/weijie-chen/Econometrics-With-Python/tree/main)
@@ -155,6 +157,7 @@ Extractor - interacts with site to get files and extract data
 * altair graphs
   - repo: https://github.com/vega/altair
   - [candlestick](https://altair-viz.github.io/gallery/candlestick_chart.html)
+  - [legend select](https://stackoverflow.com/questions/55794391/altair-interactive-line-plot-make-line-pop-and-highlighted-when-clicking-icon-o)
   - [update after creation](https://stackoverflow.com/questions/72380726/configure-x-axis-limits-after-chart-creation)
   - ~~shaded regions and recession bars: ~~
     + ~~[vertical](https://stackoverflow.com/questions/43482055/how-to-shade-a-region-with-altair)~~
