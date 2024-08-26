@@ -19,6 +19,7 @@ xlrd = "*"
 beautifulsoup4 = "*"
 altair = {extras = ["all"], version = "*"}
 scikit-learn = "*"
+nbconvert = "*"
 
 [dev-packages]
 pytest = "*"

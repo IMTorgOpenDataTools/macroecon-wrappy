@@ -157,13 +157,19 @@ Extractor - interacts with site to get files and extract data
 * altair graphs
   - repo: https://github.com/vega/altair
   - [candlestick](https://altair-viz.github.io/gallery/candlestick_chart.html)
+  - [deep understanding of candlestick](https://coderzcolumn.com/tutorials/data-science/candlestick-chart-in-python-mplfinance-plotly-bokeh)
   - [legend select](https://stackoverflow.com/questions/55794391/altair-interactive-line-plot-make-line-pop-and-highlighted-when-clicking-icon-o)
+  - [side charts](https://github.com/vega/altair/issues/1298)
   - [update after creation](https://stackoverflow.com/questions/72380726/configure-x-axis-limits-after-chart-creation)
   - ~~shaded regions and recession bars: ~~
     + ~~[vertical](https://stackoverflow.com/questions/43482055/how-to-shade-a-region-with-altair)~~
     + [horizonal](https://stackoverflow.com/questions/66820208/altair-python-solid-horizontal-bars-in-the-backgound)
     + [bars](https://github.com/vega/altair/issues/2214)
     + [discussion](https://stackoverflow.com/questions/53093402/how-to-plot-y-axis-bands-in-altair-charts)
+* ggplot, plotnine
+  - [multiple y-axes](https://github.com/has2k1/plotnine/issues/68)
+  - [ref](https://stackoverflow.com/questions/3099219/ggplot-with-2-y-axes-on-each-side-and-different-scales)
+  - [ref](https://stackoverflow.com/questions/49185583/two-y-axes-with-different-scales-for-two-datasets-in-ggplot2?noredirect=1&lq=1)
 * metric file storage, PyStore
   - update with pyarrow
   - original: https://aroussi.com/post/fast-datastore-for-pandas-time-series-data

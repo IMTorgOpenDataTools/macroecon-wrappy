@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 """
 Metric class that adds metadata to pd.Series
+
+
+#TODO: create separate Ticker class for plots to determine candlestick???
 """
 
 __author__ = "Jason Beach"
