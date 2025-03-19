@@ -24,7 +24,19 @@ def graph_cycle(df_or_measure, cols=[]):
     """..."""
 
 
-def graph_ts_js(df_or_measure, cols=[], recession_bars=True, log_scale='xy', interval_selection=True, conf_region=False, height=3, width=6, type='js', return_type=False):
+def graph_ts_js(
+        df_or_measure, 
+        cols=[], 
+        recession_bars=True, 
+        log_scale='xy', 
+        interval_selection=True,
+        separate_yaxes=False, 
+        conf_region=False, 
+        height=3, 
+        width=6, 
+        type='js', 
+        return_type=False
+        ):
     """Create a timeseries graph with typical econometric characteristics.
     Notes:
         - ensure to use `p.save(buf, verbose = False)` for efficient saving
@@ -63,8 +75,9 @@ def graph_ts_js(df_or_measure, cols=[], recession_bars=True, log_scale='xy', int
             .reset_index() \
             .dropna(axis=0) \
             .rename(columns={'timestamp':'x', 'value': 'y'})
-        data = long[long['grp'].isin(cols)]
-        rect_data = measure.get_cycle().df()
+        data = long[long['grp'].isin(cols)]#.reset_index(inplace=True)
+        if measure.get_cycle():
+            rect_data = measure.get_cycle().df()
     base = alt.Chart(data, width=600, height=200)
 
     #scales
@@ -93,7 +106,7 @@ def graph_ts_js(df_or_measure, cols=[], recession_bars=True, log_scale='xy', int
             )
         
     #recession bars
-    if recession_bars:
+    if recession_bars and 'rect_data' in locals():
         '''
         rect_data = pd.DataFrame({
             "x1": [-2, 1],

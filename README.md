@@ -74,6 +74,10 @@ pipenv uninstall macroecon_wrappy
 These API-wrappers are supported by this module with Adapters:
 
 * [fredapi](https://github.com/mortada/fredapi)
+* [treasury_fiscaldata: us-federal-treasury-python-api](https://github.com/areed1192/us-federal-treasury-python-api)
+  - requires install with `pip install ./test_modules/us-federal-treasury-python-api/.`
+* [internet_archive]()
+* [yfinance]()
 
 
 

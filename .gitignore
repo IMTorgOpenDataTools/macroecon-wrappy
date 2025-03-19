@@ -2,6 +2,7 @@
 .DS_Store
 SECRETS.yaml
 tests/tmp/*
+test_modules/
 
 
 

@@ -11,6 +11,8 @@ __license__ = "MIT"
 import pandas as pd
 import numpy as np
 
+from pathlib import Path
+
 
 
 #test data
@@ -53,3 +55,13 @@ df_cycle = pd.DataFrame([
 ])
 df_cycle.peak = pd.to_datetime(df_cycle['peak'])
 df_cycle.trough = pd.to_datetime(df_cycle['trough'])
+
+
+
+filepath = Path('./tests/data/fred/MMMFFAQ027S.csv')
+df_mmmffa = pd.read_csv(filepath)
+df_mmmffa.set_index('observation_date', inplace=True)
+
+filepath = Path('./tests/data/fred/DTB1YR.csv')
+df_tb1yr = pd.read_csv(filepath)
+df_tb1yr.set_index('observation_date', inplace=True)

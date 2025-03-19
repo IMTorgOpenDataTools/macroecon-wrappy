@@ -12,7 +12,13 @@ from macroecon_wrappy.measure import Measure
 from macroecon_wrappy.epoch import Epoch
 from macroecon_wrappy import plots
 
-from tests.data.test_data import (df_series, df_cycle)
+from tests.data.test_data import (
+    df_series, 
+    df_cycle,
+
+    df_mmmffa,
+    df_tb1yr
+    )
 
 import plotnine as p9
 import pandas as pd
@@ -43,6 +49,13 @@ def test_graph_ts_df():
 
 def test_graph_measure():
     plots.graph_ts_js(measure, cols=['col-1'], recession_bars=True, log_scale='y')
+    assert True == True
+
+def test_graph_measure_actual_data():
+    mmmffa = Metric(df_mmmffa['MMMFFAQ027S'])
+    tb1yr = Metric(df_tb1yr['DTB1YR'])
+    measure = Measure([mmmffa, tb1yr])
+    plots.graph_ts_js(measure, cols=['col-1'])
     assert True == True
 
 def test_graph_cycle():

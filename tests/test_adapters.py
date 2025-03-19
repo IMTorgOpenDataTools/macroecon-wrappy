@@ -11,6 +11,7 @@ __license__ = "MIT"
 from macroecon_wrappy.auth import Auth
 from macroecon_wrappy.adapters import (
     FredApi,
+    TreasuryFiscal,
     YahooFin,
     InternetArchive
 )
@@ -20,6 +21,7 @@ from macroecon_wrappy.models.classification import classifier
 
 #external
 from fredapi import Fred
+from treasury.client import FederalTreasuryClient
 import yfinance as yf
 import waybackpack
 
@@ -45,6 +47,15 @@ def test_fredapi():
     assert metric.title == 'Gross Domestic Product'
     pop = FredApi.get_data('POPTHM')
     assert isinstance(metric, Metric)
+
+
+def test_treasury_fiscaldata():
+    wd = cache_path / 'treasury_fiscaldata'
+    delete_folder(wd)
+    TreasuryFiscal.set_wrapper(auth, FederalTreasuryClient)
+    metric = TreasuryFiscal.get_data('other_data-historical_debt_outstanding')
+    assert isinstance(metric, Metric)
+    assert metric.shape[0] >= 236
 
 
 def test_yahoo():

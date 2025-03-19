@@ -9,6 +9,7 @@ __license__ = "MIT"
 
 #import all adapters
 from .fredapi import FredApiAdapter
+from .treasury_fiscaldata import TreasuryFiscalAdapter
 from .yahoo import YahooAdapter
 from .internet_archive import InternetArchiveAdapter
 
@@ -16,5 +17,6 @@ from .internet_archive import InternetArchiveAdapter
 
 #make available
 FredApi = FredApiAdapter()
+TreasuryFiscal = TreasuryFiscalAdapter()
 YahooFin = YahooAdapter()
 InternetArchive = InternetArchiveAdapter()

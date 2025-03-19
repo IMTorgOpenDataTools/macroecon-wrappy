@@ -67,8 +67,13 @@ class Measure:
         
     def get_cycle(self):
         """..."""
-        if self.cycle:
-            return self.cycle
+        if hasattr(self, 'cycle'):
+            if type(self.cycle) == Epoch:
+                if self.cycle.df().shape[0] > 0:
+                    return self.cycle
+            else:
+                print('no self.cycle of `Epoch` is available.  use measure.set_cycle(cycle)')
+                return None
         else:
             raise Exception('no self.cycle of `Epoch` is available.  use measure.set_cycle(cycle)')
         
