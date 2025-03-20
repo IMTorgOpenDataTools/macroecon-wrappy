@@ -40,12 +40,26 @@ class Measure:
 
     def __repr__(self) -> str:
         """Return a string representation."""
-        return self.df().head().__repr__()
+        tmp = self.df()
+        new_names = {col:f'{self.get_metric()[idx].title}({col})' for idx, col in enumerate(tmp.columns)}
+        tmp.rename(columns=new_names, inplace=True)
+        metrics = tmp.head().__repr__()
+        resp = self.get_cycle(repr=True)
+        cycle = resp if type(resp)==str else resp.df().head().__repr__()
+        result = '''
+        Metrics: \n{metrics}
+        Cycle: \n{cycle} 
+        '''.format(metrics = metrics, cycle = cycle )
+        return result
 
     def add_metric(self, metric_or_metric_list):
         """Add data from either Metric or list of Metrics."""
         metric_list = self.prepare_input_for_ingest(metric_or_metric_list)
-        result_metrics = [Metric(metric.sort_index(ascending=False)) for metric in metric_list]
+        result_metrics = []
+        for metric in metric_list:
+            new_metric = Metric(metric.sort_index(ascending=False))
+            new_metric.index = pd.DatetimeIndex(new_metric.index)
+            result_metrics.append(new_metric)
         self.metrics.extend(result_metrics)
 
     def get_metric(self, metric_lst=[]):
@@ -65,14 +79,17 @@ class Measure:
         else:
             raise Exception('arg `cycle_epoch` must be of type Epoch')
         
-    def get_cycle(self):
+    def get_cycle(self, repr=False):
         """..."""
         if hasattr(self, 'cycle'):
             if type(self.cycle) == Epoch:
                 if self.cycle.df().shape[0] > 0:
                     return self.cycle
             else:
-                print('no self.cycle of `Epoch` is available.  use measure.set_cycle(cycle)')
+                msg = 'no self.cycle of `Epoch` is available.  use measure.set_cycle(cycle)'
+                if repr:
+                    return msg
+                print(msg)
                 return None
         else:
             raise Exception('no self.cycle of `Epoch` is available.  use measure.set_cycle(cycle)')
@@ -98,12 +115,16 @@ class Measure:
             return data
         else:
             raise Exception('arg `metric_or_metric_list` must be of type Metric of list of Metrics')
-        
-    def df(self):
+    
+    def df(self, interpolated=False):
         """Get combined pd.DataFrame of Metrics, Cycle, etc."""
         df = pd.DataFrame(self.metrics).transpose()
+        df.index = pd.DatetimeIndex(df.index)
         #df.columns = [metric.id if (metric.id not in [None, '']) else f'col-{idx}' for idx, metric in enumerate(self.metrics) ]
         df.columns = [metric.id if (hasattr(metric, 'id') and getattr(metric, 'id') not in [None, '']) else f'col-{idx}' for idx, metric in enumerate(self.metrics) ]
+        if interpolated==True:
+            for col in df.columns:
+                df[col] = df[col].astype(float).interpolate(method='time', limit_direction='forward', axis=0)
         df.sort_index(ascending=False, inplace=True)
         return df
     

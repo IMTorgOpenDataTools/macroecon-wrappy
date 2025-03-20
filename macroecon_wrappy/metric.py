@@ -23,7 +23,7 @@ class Metric(pd.Series):
         * index: (Timestamp)
         * values: (float)
 
-    Metadata
+    Metadata    #TODO: infer most of these and require timeseries index
         * date_range: (string) - specifies the dates of the first and last observations.
         * frequency: (string) - data frequency. `Daily`, `Weekly`, `Monthly`, `Quarterly`, `Semiannual`, or `Annual`.
         * frequency_short: (string) - data frequency. Abbreviated. `D`, `W`, `M`, `Q`, `SA, or `A`.

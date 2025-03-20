@@ -67,10 +67,10 @@ def graph_ts_js(
         measure = df_or_measure
         if len(cols)>0:
             for col in cols:
-                if col not in measure.df().columns:
+                if col not in measure.df(interpolated=True).columns:
                     raise Exception(f"arg {col} contains metrics not in Measure")
         else:
-            cols = measure.df().columns.to_list()
+            cols = measure.df(interpolated=True).columns.to_list()
         long = measure.to_long() \
             .reset_index() \
             .dropna(axis=0) \
