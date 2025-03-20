@@ -2,7 +2,8 @@
 """
 treasury fiscal data Adapter 
 
-Note:
+Notes:
+* ref: https://fiscaldata.treasury.gov/datasets/
 * simple AdapterInterface cache is used
 """
 
@@ -34,7 +35,37 @@ class TreasuryFiscalAdapter(AdapterInterface):
         """
         #config
         mapping = {
-            'other_data': ['average_interest_rates', 'balance_sheets', 'gold_reserve', 'historical_debt_outstanding', 'interest_expense']
+            'other_data': [
+                'average_interest_rates', 
+                'balance_sheets', 
+                'gold_reserve', 
+                'historical_debt_outstanding', 
+                'interest_expense'
+                ],
+            'monthly_treasury_statements': [
+                'analysis_change_in_liabilities',
+                'borrowing_financed_treasury_securities',
+                'budgets_and_financing',
+                'direct_loan_financing',
+                'investments_federal_securities',
+                'means_of_financing',
+                'outlays',
+                'receipts',
+                'receipts_and_outlays',
+                'receipts_and_outlays_by_month',
+                'receipts_by_source_outlay_by_function',
+                'borrowing_financed_treasury_securities',
+                'securities_issued_special_financing'
+                ],
+            'public_debt_instruments': [
+                'treasury_securities_outstanding',
+                'statutory_debt_limit',
+                'details_of_securities_outstanding',
+                'details_of_marketable_securities_outstanding',
+                'details_of_nonmarketable_securities_outstanding',
+                'historical_data',
+                'holding_of_securities_stripped_form'
+            ]
         }
         k,v = seriesId.split('-')
         if k not in mapping.keys(): raise Exception(f'key {k} not in mapping')
@@ -48,9 +79,10 @@ class TreasuryFiscalAdapter(AdapterInterface):
         #o/w get data
         key_group = getattr(self.wrapper, k)
         value_method_to_call = getattr(key_group(), v)
-        result_dict = value_method_to_call(page_size=1000)    #TODO:this may not be a param for all methods
+        result_dict = value_method_to_call(page_number=2000, page_size=1000)    #TODO:this may not be a param for all methods
         if not result_dict:
             raise Exception(f'no data found for seriesId {seriesId}')
+        """
         pd_df = pd.DataFrame(result_dict['data'])
         pd_df['record_date'] = pd.to_datetime(pd_df['record_date'])
         pd_series = pd_df.set_index('record_date')['debt_outstanding_amt']
@@ -78,7 +110,9 @@ class TreasuryFiscalAdapter(AdapterInterface):
         #cache and return results
         self._cache_data(seriesId, metric)
         return metric
-    
+        """
+        return result_dict
+    '''
     def get_metadata(self, seriesId):
         """Get the seriesId metadata.
         If it is not already extracted, request it, or add to it
@@ -101,4 +135,5 @@ class TreasuryFiscalAdapter(AdapterInterface):
             series_meta_dict = subset.iloc[0].to_dict()
             return series_meta_dict
         else:
-            return None
+            return None'
+    '''
