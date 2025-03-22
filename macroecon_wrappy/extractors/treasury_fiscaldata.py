@@ -8,14 +8,7 @@ Notes:
 * full dataset table extracted 
   - from here: https://fiscaldata.treasury.gov/api-documentation/
   - maintained here: 'macroecon_wrappy/macroecon_wrappy/adapters/data/
-* ~~simple AdapterInterface cache is used~~
   
-
-
-TODO:
-* ~~move to Extractor (do not use the earlier api wrapper)~~
-* create endpoint with params
-* ~~complicated response does not allow for simple conversion to Metric
 """
 
 __author__ = "Jason Beach"
@@ -97,7 +90,10 @@ class TreasuryFiscalExtractor(ExtractorInterface):
         return data
 
     def get_data(self, *args, **kwargs):
-        """Get data from URL and return object of different classes."""
+        """Get data from URL and return object of different classes.
+        
+        #TODO:use the .get_raw() and xform to return Metric
+        """
         raise NotImplementedError("Implement this for API-wrapper")
 
 
