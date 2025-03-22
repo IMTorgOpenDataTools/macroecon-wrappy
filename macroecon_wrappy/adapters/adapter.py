@@ -11,6 +11,7 @@ __license__ = "MIT"
 
 import pickle
 
+
 class AdapterInterface():
     """Interface for wrapper adapter"""
 

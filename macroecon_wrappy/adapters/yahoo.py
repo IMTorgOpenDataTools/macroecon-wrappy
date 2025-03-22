@@ -62,6 +62,16 @@ class YahooAdapter(AdapterInterface):
         """
         tickerId = kwargs['tickers']
         tkr = self.wrapper.Ticker(tickerId, session=self.session)
+
+        #check if already available
+        pd_series = self._get_data_if_cached(key=tickerId)
+        if type(pd_series)==Metric:
+            return pd_series
+        #pd_df = self._get_data_if_cached(key=tickerId)
+        #if type(pd_df)==pd.DataFrame:
+        #    return pd_df
+
+        #o/w get data
         try:
             if list(kwargs.items()).__len__()==1:
                 df_hist = self.wrapper.download(tickerId, period="max", session=self.session)
@@ -96,20 +106,18 @@ class YahooAdapter(AdapterInterface):
         metric.t = df_hist.index.max() - df_hist.index.min()
         metric.units = '$ - dollar'
         metric.units_short = '$'
-
         metric.set_metadata(**tkr.info)
+
+        #cache and return results
+        self._cache_data(tickerId, df_hist)
         return metric
     
+    '''
     def _set_cache_path(self, auth, name):
-        """Set the directory (and file) to use as cache."""
+        """Set the directory (and file) to use as cache.
+        TODO:maybe use yfinance-specific cache later
+        """
         cache_path = auth.cache_path / name
         cache_path.mkdir(parents=False, exist_ok=True)
         self.wrapper.set_tz_cache_location(cache_path)
-
-    def _cache_data(self, key, data):
-        """Save data to cache."""
-        raise NotImplementedError("Cache maintained with API-wrapper")
-
-    def _get_data_if_cached(self, key):
-        """Check if data is cached and retrieve if so."""
-        raise NotImplementedError("Cache maintained with API-wrapper")
+    '''

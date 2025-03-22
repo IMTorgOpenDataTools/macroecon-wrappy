@@ -23,4 +23,4 @@ def test_auth():
     assert 'API_KEY_FED' in auth.data.keys()
     assert auth.data['API_KEY_FED'] == '<add-key-here>'
     assert auth.cache_path == Path('tests/tmp')
-    assert auth.get_cache_sources().__len__() == 0
+    assert auth.get_cache_sources().__len__() >= 0

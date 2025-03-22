@@ -11,7 +11,6 @@ __license__ = "MIT"
 from macroecon_wrappy.auth import Auth
 from macroecon_wrappy.adapters import (
     FredApi,
-    #TreasuryFiscal,
     YahooFin,
     InternetArchive
 )
@@ -21,7 +20,6 @@ from macroecon_wrappy.models.classification import classifier
 
 #external
 from fredapi import Fred
-#from treasury.client import FederalTreasuryClient
 import yfinance as yf
 import waybackpack
 
@@ -45,27 +43,10 @@ def test_fredapi():
     assert isinstance(metric, Metric)
     assert metric.shape[0] >= 313
     assert metric.title == 'Gross Domestic Product'
+    metric_from_cache = FredApi.get_data('GDP')
+    assert isinstance(metric_from_cache, Metric)
     pop = FredApi.get_data('POPTHM')
     assert isinstance(metric, Metric)
-
-
-def test_treasury_fiscaldata():
-    """
-    wd = cache_path / 'treasury_fiscaldata'
-    delete_folder(wd)
-    TreasuryFiscal.set_wrapper(auth, FederalTreasuryClient)
-    assert True == True
-    #TODO: the data appears too dense to place in a simple Metric
-    metric = TreasuryFiscal.get_data('Historical Debt Outstanding-Historical Debt Outstanding')
-    assert isinstance(metric, Metric)
-    assert metric.shape[0] >= 236
-    metric = TreasuryFiscal.get_data('U.S. Treasury Monthly Statement of the Public Debt (MSPD)-Detail of Treasury Securities Outstanding')
-    assert isinstance(metric, Metric)
-    assert metric.shape[0] >= 236
-    """
-    assert True == True
-    
-
 
 def test_yahoo():
     wd = cache_path / 'yfinance'
@@ -84,6 +65,8 @@ def test_yahoo():
     assert metric3.shape[0] >= 1374
     metric4 = YahooFin.wrapper.download('MSFT', period="1d")
     assert metric4.shape == (1,5)
+    metric_from_cache = YahooFin.get_data(tickers='MSFT')
+    assert isinstance(metric_from_cache, Metric)
 
 def test_internet_archive():
     """

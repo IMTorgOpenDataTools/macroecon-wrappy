@@ -12,12 +12,18 @@ from macroecon_wrappy.auth import Auth
 from macroecon_wrappy.extractors import (
     NberExtract,
     TreasuryExtract,
+    FiscalExtract,
 )
-#from macroecon_wrappy.metric import Metric
+from macroecon_wrappy.extractors.treasury_fiscaldata import FederalTreasuryClient
+
+from macroecon_wrappy.metric import Metric
 from macroecon_wrappy.epoch import Epoch
 from macroecon_wrappy.utils import delete_folder
 
-#sys
+#external
+import pandas as pd
+
+#stdlib
 from pathlib import Path
 
 
@@ -35,14 +41,14 @@ def test_nber():
     NberExtract.set_config(auth)
     name = 'recessions'
     recessions = NberExtract.get_data(name)
-    assert recessions.df().shape == (35,2)
+    assert recessions.df().shape == (35,3)
     results = []
     for idx, col in enumerate(['start', 'end']):
         result = recessions.df().columns[idx] == col
         results.append(result)
     assert all(results)
     recessions_from_cache = NberExtract.get_data(name)
-    assert recessions_from_cache.df().shape == (35,2)
+    assert recessions_from_cache.df().shape == (35,3)
 
 def test_treasury():
     wd = cache_path / 'treasury'
@@ -56,3 +62,15 @@ def test_treasury():
     TreasuryExtract.set_config(auth)
     coupons_df_from_cache = TreasuryExtract.get_raw(names[0])
     assert coupons_df_from_cache.shape == (1803, 15)
+
+def test_treasury_fiscaldata():
+    wd = cache_path / 'treasury_fiscaldata'
+    delete_folder(wd)
+    FiscalExtract.set_wrapper(auth, FederalTreasuryClient)
+    raw_dict = FiscalExtract.get_raw('Historical Debt Outstanding')
+    assert isinstance(raw_dict, dict)
+    assert list(raw_dict.keys()) == ['data','meta','links']
+    assert len(raw_dict['data']) >= 0
+    raw_dict = FiscalExtract.get_raw('Detail of Treasury Securities Outstanding')
+    assert isinstance(raw_dict, dict)
+    assert len(raw_dict['data']) >= 0

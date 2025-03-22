@@ -31,7 +31,7 @@ class FredApiAdapter(AdapterInterface):
         """Get data from API and return object of class Metric."""
         #check if already available
         pd_series = self._get_data_if_cached(key=seriesId)
-        if pd_series:
+        if type(pd_series)==Metric:
             return pd_series
         
         #o/w get data

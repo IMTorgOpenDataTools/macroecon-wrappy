@@ -10,8 +10,10 @@ __license__ = "MIT"
 #import all extractors
 from .nber import NberExtractor
 from .treasury import UsTreasuryExtractor
+from .treasury_fiscaldata import TreasuryFiscalExtractor
 
 
 #make available
 NberExtract = NberExtractor()
 TreasuryExtract = UsTreasuryExtractor()
+FiscalExtract = TreasuryFiscalExtractor()
