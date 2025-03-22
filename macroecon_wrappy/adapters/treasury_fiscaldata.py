@@ -4,7 +4,17 @@ treasury fiscal data Adapter
 
 Notes:
 * ref: https://fiscaldata.treasury.gov/datasets/
-* simple AdapterInterface cache is used
+* ~~simple AdapterInterface cache is used~~
+* full dataset table extracted 
+  - from here: https://fiscaldata.treasury.gov/api-documentation/
+  - maintained here: 'macroecon_wrappy/macroecon_wrappy/adapters/data/
+  
+
+
+TODO:
+* move to Extractor (do not use the earlier api wrapper)
+* create endpoint with params
+* complicated response does not allow for simple conversion to Metric
 """
 
 __author__ = "Jason Beach"
@@ -15,6 +25,10 @@ from .adapter import AdapterInterface
 from ..metric import Metric
 
 import pandas as pd
+from bs4 import BeautifulSoup
+
+from pathlib import Path
+import requests
 
 
 class TreasuryFiscalAdapter(AdapterInterface):
@@ -28,49 +42,47 @@ class TreasuryFiscalAdapter(AdapterInterface):
         self.wrapper_name = 'treasury_fiscaldata'
         self._set_cache_path(auth, self.wrapper_name)
 
+        #config
+        dataset_table_files = [
+            'macroecon_wrappy/adapters/data/API Documentation _ U.S. Treasury Fiscal Data - 1.html',
+            'macroecon_wrappy/adapters/data/API Documentation _ U.S. Treasury Fiscal Data - 2.html'
+        ]
+        self.datasets = []
+        for file in dataset_table_files:
+            filepath = Path() / file
+            with open(filepath, 'r') as f:
+                html = f.read()
+            soup = BeautifulSoup(html)
+            tbl = soup.find('table', {'aria-describedby': 'list-of-endpoints-id'})
+            ths = tbl.findAll('thead')[0].findAll('th')
+            trs = tbl.findAll('tbody')[0].findAll('tr')
+            for tr in trs:
+                tds = tr.findAll('td')
+                dataset = {
+                    f'{ths[0].text}-name': tds[0].find('a').text, 
+                    f'{ths[0].text}-href': tds[0].find('a').get('href'),
+                    ths[1].text: tds[1].text,
+                    ths[2].text: tds[2].text,
+                    ths[3].text: tds[3].text
+                }
+                self.datasets.append(dataset)
+
     def get_data(self, seriesId):
         """Get data from API and return object of class Metric.
         
         seriesId == 'other_data-historical_debt_outstanding'
         """
-        #config
-        mapping = {
-            'other_data': [
-                'average_interest_rates', 
-                'balance_sheets', 
-                'gold_reserve', 
-                'historical_debt_outstanding', 
-                'interest_expense'
-                ],
-            'monthly_treasury_statements': [
-                'analysis_change_in_liabilities',
-                'borrowing_financed_treasury_securities',
-                'budgets_and_financing',
-                'direct_loan_financing',
-                'investments_federal_securities',
-                'means_of_financing',
-                'outlays',
-                'receipts',
-                'receipts_and_outlays',
-                'receipts_and_outlays_by_month',
-                'receipts_by_source_outlay_by_function',
-                'borrowing_financed_treasury_securities',
-                'securities_issued_special_financing'
-                ],
-            'public_debt_instruments': [
-                'treasury_securities_outstanding',
-                'statutory_debt_limit',
-                'details_of_securities_outstanding',
-                'details_of_marketable_securities_outstanding',
-                'details_of_nonmarketable_securities_outstanding',
-                'historical_data',
-                'holding_of_securities_stripped_form'
-            ]
-        }
+        ds = pd.DataFrame(self.datasets)
+
         k,v = seriesId.split('-')
-        if k not in mapping.keys(): raise Exception(f'key {k} not in mapping')
-        if v not in mapping[k]: raise Exception(f'value {v} not in mapping')
+        if k not in ds['Dataset-name'].to_list(): raise Exception(f'key {k} not in mapping')
+        if v not in ds['Table Name'].to_list(): raise Exception(f'value {v} not in mapping')
+        tbl_name = ds[ds['Table Name']==v]
         
+        #TODO:stopped here
+
+
+
         #check if already available
         pd_series = self._get_data_if_cached(key=seriesId)
         if pd_series:

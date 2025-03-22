@@ -54,14 +54,14 @@ def test_treasury_fiscaldata():
     delete_folder(wd)
     TreasuryFiscal.set_wrapper(auth, FederalTreasuryClient)
     assert True == True
-    """#TODO: the data appears too dense to place in a simple Metric
-    metric = TreasuryFiscal.get_data('other_data-historical_debt_outstanding')
+    #TODO: the data appears too dense to place in a simple Metric
+    metric = TreasuryFiscal.get_data('Historical Debt Outstanding-Historical Debt Outstanding')
     assert isinstance(metric, Metric)
     assert metric.shape[0] >= 236
-    metric = TreasuryFiscal.get_data('public_debt_instruments-details_of_securities_outstanding')
+    metric = TreasuryFiscal.get_data('U.S. Treasury Monthly Statement of the Public Debt (MSPD)-Detail of Treasury Securities Outstanding')
     assert isinstance(metric, Metric)
     assert metric.shape[0] >= 236
-    """
+    
 
 
 def test_yahoo():

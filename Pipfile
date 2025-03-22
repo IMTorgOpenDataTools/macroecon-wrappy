@@ -31,7 +31,6 @@ ta = "*"
 requests-html = "*"
 pandas-ta = "*"
 fredapi = "*"
-us-federal-treasury-python-api = {file = "test_modules/us-federal-treasury-python-api"}
 
 [requires]
 python_version = "3.12"
