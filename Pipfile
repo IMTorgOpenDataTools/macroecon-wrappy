@@ -25,12 +25,12 @@ pandas = "*"
 [dev-packages]
 pytest = "*"
 ipykernel = "*"
-yfinance = "*"
 waybackpack = "*"
 ta = "*"
 requests-html = "*"
 pandas-ta = "*"
 fredapi = "*"
+yfinance = ">=0.2.54"
 
 [requires]
 python_version = "3.12"
