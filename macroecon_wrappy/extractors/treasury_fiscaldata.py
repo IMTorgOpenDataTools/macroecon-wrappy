@@ -119,7 +119,7 @@ class Logging():
 logging = Logging()
 
 
-class FederalTreasuryClient():
+class TreasuryFiscalClient():
 
     def __init__(self) -> None:
         """Initializes the `FederalTreasuryClient`.

@@ -11,9 +11,13 @@ __license__ = "MIT"
 from .nber import NberExtractor
 from .treasury import UsTreasuryExtractor
 from .treasury_fiscaldata import TreasuryFiscalExtractor
+from .treasury_ofr import TreasuryOfrExtractor
+from .frbny import FrbnyExtractor
 
 
 #make available
 NberExtract = NberExtractor()
 TreasuryExtract = UsTreasuryExtractor()
 FiscalExtract = TreasuryFiscalExtractor()
+OfrExtract = TreasuryOfrExtractor()
+FrbnyExtract = FrbnyExtractor()
