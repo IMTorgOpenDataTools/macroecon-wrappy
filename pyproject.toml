@@ -1,3 +1,38 @@
-[build-system]
-requires = ["setuptools"]
-build-backend = "setuptools.build_meta"
+[project]
+name = ""
+version = "0.0.1"
+requires-python = ">=3.12"
+dependencies = [
+    "pyyaml",
+    "requests",
+    "plotnine",
+    "bs4",
+    "lxml",
+    "requests-cache",
+    "requests-ratelimiter",
+    "pyrate-limiter",
+    "xlrd",
+    "beautifulsoup4",
+    "altair[all]",
+    "scikit-learn",
+    "nbconvert",
+    "pandas",
+]
+
+[dependency-groups]
+dev = [
+    "pytest",
+    "ipykernel",
+    "waybackpack",
+    "requests-html",
+    "yfinance",
+    "alpha-vantage",
+    "fredapi>=0.5.2",
+]
+
+[tool.uv]
+package = false
+
+[[tool.uv.index]]
+name = "pypi"
+url = "https://pypi.org/simple"
