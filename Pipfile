@@ -19,7 +19,6 @@ beautifulsoup4 = "*"
 altair = {extras = ["all"], version = "*"}
 scikit-learn = "*"
 nbconvert = "*"
-pytest = "*"
 pandas = "*"
 
 [dev-packages]
@@ -29,8 +28,8 @@ waybackpack = "*"
 ta = "*"
 requests-html = "*"
 pandas-ta = "*"
-fredapi = "*"
 yfinance = ">=0.2.54"
+alpha-vantage = "*"
 
 [requires]
-python_version = "3.12"
+python_version = "3.9"

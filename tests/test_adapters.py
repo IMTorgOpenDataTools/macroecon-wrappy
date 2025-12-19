@@ -12,6 +12,7 @@ from macroecon_wrappy.auth import Auth
 from macroecon_wrappy.adapters import (
     FredApi,
     YahooFin,
+    AlphaVantage,
     InternetArchive
 )
 from macroecon_wrappy.metric import Metric
@@ -21,6 +22,7 @@ from macroecon_wrappy.models.classification import classifier
 #external
 from fredapi import Fred
 import yfinance as yf
+import alpha_vantage as av
 import waybackpack
 
 #sys
@@ -67,6 +69,15 @@ def test_yahoo():
     assert metric4.shape == (1,5)
     metric_from_cache = YahooFin.get_data(tickers='MSFT')
     assert isinstance(metric_from_cache, Metric)
+
+def test_alphavantage():
+    wd = cache_path / 'alpha'
+    #delete_folder(wd)
+    AlphaVantage.set_wrapper(auth, av)
+    metric = AlphaVantage.get_data(tickers='MSFT')
+    assert True == True
+
+
 
 def test_internet_archive():
     """

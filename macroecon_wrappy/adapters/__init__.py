@@ -10,6 +10,7 @@ __license__ = "MIT"
 #import all adapters
 from .fredapi import FredApiAdapter
 from .yahoo import YahooAdapter
+from .alpha import AlphaVantageAdapter
 from .internet_archive import InternetArchiveAdapter
 
 
@@ -17,4 +18,5 @@ from .internet_archive import InternetArchiveAdapter
 #make available
 FredApi = FredApiAdapter()
 YahooFin = YahooAdapter()
+AlphaVantage = AlphaVantageAdapter()
 InternetArchive = InternetArchiveAdapter()
