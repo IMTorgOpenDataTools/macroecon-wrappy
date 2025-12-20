@@ -3,7 +3,7 @@
 yahoo finance Adapter 
 
 Note:
-* yfinance maintains its own cache
+* yfinance_cache maintains its own cache
 * Use the abstract Adapter methods or access the wrapper directly with: `self.wrapper`
 * it is important to note that the 1m (min) data is only retrievable for the last 7 days, 
 and anything intraday (interval <1d) only for the last 60 days.
@@ -20,11 +20,46 @@ from ..metric import Metric
 import pandas as pd
 from requests import Session
 from requests_cache import CacheMixin, SQLiteCache
-from requests_ratelimiter import LimiterMixin, MemoryQueueBucket
+from requests_ratelimiter import LimiterMixin, MemoryQueueBucket, LimiterSession
 from pyrate_limiter import Duration, RequestRate, Limiter
 
 class CachedLimiterSession(CacheMixin, LimiterMixin, Session):
     pass
+
+import time
+
+
+
+
+def get_recursive_items(data, criteria_func):
+    """
+    TODO: use this at ref
+    Recursively finds items where criteria_func(key, value) is True.
+    Returns a list of (key, value) tuples.
+    """
+    results = []
+    if isinstance(data, dict):
+        for k, v in data.items():
+            # Check if the current key-value pair meets criteria
+            if criteria_func(k, v):
+                results.append((k, v))
+            
+            # Recurse if value is a nested dict or list
+            if isinstance(v, (dict, list)):
+                results.extend(get_recursive_items(v, criteria_func))
+                
+    elif isinstance(data, list):
+        for item in data:
+            if isinstance(item, (dict, list)):
+                results.extend(get_recursive_items(item, criteria_func))
+                
+    return results
+
+# Example Usage: Get all items where the value is an integer > 100
+my_data = {"a": 50, "b": {"c": 150, "d": [200, {"e": 300}]}}
+found = get_recursive_items(my_data, lambda k, v: isinstance(v, int) and v > 100)
+# Output: [('c', 150), ('e', 300)]
+
 
 
 
@@ -39,13 +74,21 @@ class YahooAdapter(AdapterInterface):
         self.wrapper = wrapper
         self.wrapper_name = 'yfinance'
         self.cache_file = auth.cache_path / f"{self.wrapper_name}" / f"{self.wrapper_name}.cache"
+        #TODO:effectively implement yfinance_cache
+        '''
+        history_rate = RequestRate(1, Duration.SECOND) 
+        limiter = Limiter(history_rate)
+        session = LimiterSession(limiter=limiter)
+        session.headers['User-Agent'] = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36'
+        
         session = CachedLimiterSession(
             limiter=Limiter(RequestRate(2, Duration.SECOND*5)),  # max 2 requests per 5 seconds
             bucket_class=MemoryQueueBucket,
             backend=SQLiteCache(self.cache_file),
         )
-        #session.headers['User-agent'] = 'my-program/1.0'
+        session.headers['User-agent'] = 'my-program/1.0'
         self.session = session
+        '''
         self._set_cache_path(auth, self.wrapper_name)
         
 
@@ -61,35 +104,43 @@ class YahooAdapter(AdapterInterface):
             >>> YahooFin.self.wrapper.download(tickerId, period="max", session=self.session)
         """
         tickerId = kwargs['tickers']
-        tkr = self.wrapper.Ticker(tickerId, session=self.session)
-
+        
         #check if already available
-        pd_series = self._get_data_if_cached(key=tickerId)
-        if type(pd_series)==Metric:
-            return pd_series
-        #pd_df = self._get_data_if_cached(key=tickerId)
-        #if type(pd_df)==pd.DataFrame:
-        #    return pd_df
-
-        #o/w get data
-        try:
-            if list(kwargs.items()).__len__()==1:
-                df_hist = self.wrapper.download(tickerId, period="max", session=self.session)
-            else:
-                df_hist = self.wrapper.download(**kwargs, session=self.session)
-            '''
-            #TODO:add
-            tkr.get_shares_full(start=start_date, end=end_date)
-            tkr.msft.actions
-            tkr.msft.dividends
-            tkr.splits
-            tkr.capital_gains
-            '''
-        except Exception as e:
-            print(e)
+        data = self._get_data_if_cached(key=tickerId)
+        if data:
+            df_hist = data['df']
+            tkr = self.wrapper.Ticker(tickerId)
+            for key, value in data['tkr'].items():
+                setattr(tkr, key, value)
+        else:
+            #o/w get data
+            try:
+                tkr = self.wrapper.Ticker(tickerId)
+                time.sleep(1)#TODO:anything more pythonic?
+                if list(kwargs.items()).__len__()==1:
+                    df_hist = self.wrapper.download(tickerId, period="max")
+                else:
+                    df_hist = self.wrapper.download(**kwargs)
+                time.sleep(1)
+                attrs = {k:v for k,v in tkr.__dict__.items() if type(v) in [float, int, str, dict]}   # use get_recursive_items() here
+                data = {
+                    'df': df_hist,
+                    'tkr': attrs
+                }
+                self._cache_data(tickerId, data)
+                '''
+                #TODO:add
+                tkr.get_shares_full(start=start_date, end=end_date)
+                tkr.msft.actions
+                tkr.msft.dividends
+                tkr.splits
+                tkr.capital_gains
+                '''
+            except Exception as e:
+                print(e)
         ts = df_hist[['High', 'Low']].mean(axis=1)
 
-        #TODO: metadata mapping needs improvement
+        #metadata mapping needs improvement
         metric = Metric(ts)
         metric.title = tkr.info['longName']
         metric.id = tkr.info['symbol']
@@ -108,8 +159,6 @@ class YahooAdapter(AdapterInterface):
         metric.units_short = '$'
         metric.set_metadata(**tkr.info)
 
-        #cache and return results
-        self._cache_data(tickerId, df_hist)
         return metric
     
     '''

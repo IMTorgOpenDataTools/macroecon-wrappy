@@ -28,6 +28,7 @@ dev = [
     "yfinance",
     "alpha-vantage",
     "fredapi>=0.5.2",
+    "yfinance-cache>=0.7.13",
 ]
 
 [tool.uv]

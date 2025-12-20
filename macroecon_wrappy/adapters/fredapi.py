@@ -40,7 +40,7 @@ class FredApiAdapter(AdapterInterface):
         if not series_meta_dict:
             raise Exception(f'no metadata found for seriesId {seriesId}')
         
-        #TODO: metadata mapping needs
+        #metadata mapping needs
         metric = Metric(pd_series)
         metric.title = series_meta_dict['title']
         metric.id = series_meta_dict['id']

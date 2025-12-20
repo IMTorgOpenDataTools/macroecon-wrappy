@@ -21,8 +21,8 @@ from macroecon_wrappy.models.classification import classifier
 
 #external
 from fredapi import Fred
-import yfinance as yf
-import alpha_vantage as av
+import yfinance_cache as yfc
+from alpha_vantage.timeseries import TimeSeries as avTimeSeries
 import waybackpack
 
 #sys
@@ -53,8 +53,8 @@ def test_fredapi():
 def test_yahoo():
     wd = cache_path / 'yfinance'
     delete_folder(wd)
-    YahooFin.set_wrapper(auth, yf)
-    metric = YahooFin.get_data(tickers='MSFT')
+    YahooFin.set_wrapper(auth, yfc)
+    metric = YahooFin.get_data(tickers='MSFT')   #TODO: Solution: stop setting session, let YF handle.
     assert isinstance(metric, Metric)
     assert metric.id == 'MSFT'
     assert metric.title == 'Microsoft Corporation'
@@ -66,18 +66,21 @@ def test_yahoo():
     metric3 = YahooFin.get_data(tickers='MSFT', interval="1m")
     assert metric3.shape[0] >= 1374
     metric4 = YahooFin.wrapper.download('MSFT', period="1d")
-    assert metric4.shape == (1,5)
+    assert metric4.shape == (1,10)
     metric_from_cache = YahooFin.get_data(tickers='MSFT')
     assert isinstance(metric_from_cache, Metric)
 
 def test_alphavantage():
-    wd = cache_path / 'alpha'
-    #delete_folder(wd)
-    AlphaVantage.set_wrapper(auth, av)
+    wd = cache_path / 'alphavantage'
+    delete_folder(wd)
+    AlphaVantage.set_wrapper(auth, avTimeSeries)
     metric = AlphaVantage.get_data(tickers='MSFT')
-    assert True == True
-
-
+    assert isinstance(metric, Metric)
+    del metric
+    metric = AlphaVantage.get_data(tickers='MSFT')
+    assert metric.id == 'MSFT'     
+    assert metric.title == 'MSFT'
+    assert metric.shape[0] >= 100
 
 def test_internet_archive():
     """

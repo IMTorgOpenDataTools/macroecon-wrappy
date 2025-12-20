@@ -22,7 +22,7 @@ Set the authentication key for the wrapper.
 Add external libraries using the `--dev` argument, such as:
 
 ```bash
-pipenv install --dev waybackpack
+uv add --dev waybackpack
 ```
 
 
@@ -43,7 +43,7 @@ Work directly with the Measure for various tasks and transformations.
 ## Test
 
 ```bash
-pipenv run pytest --collect-only
+uv run pytest --collect-only
 ```
 
 
@@ -52,7 +52,7 @@ pipenv run pytest --collect-only
 Its often best to work with the notebook while quickly developing.
 
 ```bash
-pipenv install -e .
+uv pip install -e .
 ```
 
 Then simply import into the notebook
@@ -64,7 +64,7 @@ import macroecon_wrappy as me
 But ensure to remove it when done:
 
 ```bash
-pipenv uninstall macroecon_wrappy
+uv pip uninstall macroecon_wrappy
 ```
 
 

@@ -63,6 +63,17 @@ class Metric(pd.Series):
 
         self.index.set_names(['timestamp'], inplace=True)
 
+    def __repr__(self):
+        return super().__repr__()
+    
+    """
+    def __getstate__(self):
+        state = self.__dict__.copy()
+        return state
+    
+    def __setstate__(self, state):
+        self.__dict__.update(state)
+    """
     def set_metadata(self, **kwargs):
         """Set metadata for the Metric.
         

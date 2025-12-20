@@ -5,7 +5,7 @@ alpha vantage Adapter
 Note:
 * [alpha_vantage](https://github.com/RomelTorres/alpha_vantage)
 * Use the abstract Adapter methods or access the wrapper directly with: `self.wrapper`
-* limited 25 requests per day
+* limited 25 requests per day, 5 requests per minute, outputsize='compact' is 100 days of data
 * [API reference](https://www.alphavantage.co/documentation/#intraday)
 * [FAQ](https://www.alphavantage.co/support/#api-key)
 * alternative is [Financial Modeling Prep](https://site.financialmodelingprep.com/developer/docs/pricing)
@@ -37,9 +37,10 @@ class AlphaVantageAdapter(AdapterInterface):
 
     def set_wrapper(self, auth, wrapper):
         """Set the authenticated wrapper and cache."""
-        self.wrapper = wrapper.timeseries.TimeSeries(key=auth.data['API_KEY_ALPHA'])
+        self.wrapper = wrapper(key=auth.data['API_KEY_ALPHA'], output_format='pandas', indexing_type='date')
         self.wrapper_name = 'alphavantage'
         self.cache_file = auth.cache_path / f"{self.wrapper_name}" / f"{self.wrapper_name}.cache"
+        '''
         session = CachedLimiterSession(
             limiter=Limiter(RequestRate(2, Duration.SECOND*5)),  # max 2 requests per 5 seconds
             bucket_class=MemoryQueueBucket,
@@ -47,6 +48,7 @@ class AlphaVantageAdapter(AdapterInterface):
         )
         #session.headers['User-agent'] = 'my-program/1.0'
         self.session = session
+        '''
         self._set_cache_path(auth, self.wrapper_name)
         
 
@@ -62,57 +64,62 @@ class AlphaVantageAdapter(AdapterInterface):
             >>> YahooFin.self.wrapper.download(tickerId, period="max", session=self.session)
         """
         tickerId = kwargs['tickers']
-        tkr = self.wrapper.Ticker(tickerId, session=self.session)
 
         #check if already available
-        pd_series = self._get_data_if_cached(key=tickerId)
-        if type(pd_series)==Metric:
-            return pd_series
-        #pd_df = self._get_data_if_cached(key=tickerId)
-        #if type(pd_df)==pd.DataFrame:
-        #    return pd_df
-
-        #o/w get data
-        try:
-            if list(kwargs.items()).__len__()==1:
-                df_hist = self.wrapper.get_intraday(tickerId, period="max", session=self.session)
-            else:
-                df_hist = self.wrapper.download(**kwargs, session=self.session)
-
-            #STOPPED HERE
-            '''
-            #TODO:add
-            tkr.get_shares_full(start=start_date, end=end_date)
-            tkr.msft.actions
-            tkr.msft.dividends
-            tkr.splits
-            tkr.capital_gains
-            '''
-        except Exception as e:
-            print(e)
-        ts = df_hist[['High', 'Low']].mean(axis=1)
-
-        #TODO: metadata mapping needs improvement
+        data = self._get_data_if_cached(key=tickerId)
+        if data:
+            df_hist = data['df']
+            meta_data = data['meta']
+        else:
+            #otherwise get data
+            try:
+                if list(kwargs.items()).__len__()==1:
+                    df_hist, meta_data = self.wrapper.get_daily(tickerId, outputsize='compact')
+                else:
+                    df_hist, meta_data = self.wrapper.download(**kwargs, outputsize='compact')
+                data = {
+                    'df': df_hist,
+                    'meta': meta_data
+                }
+                self._cache_data(tickerId, data)
+            except Exception as e:
+                print(e)
+        df_ts = df_hist.rename(columns={
+            '1. open':'Open', 
+            '2. high':'High', 
+            '3. low':'Low', 
+            '4. close':'Close', 
+            '5. volume':'Volume'
+        })
+        ts = df_ts[['High', 'Low']].mean(axis=1)
+        
+        #metadata mapping
         metric = Metric(ts)
-        metric.title = tkr.info['longName']
-        metric.id = tkr.info['symbol']
-        metric.source = 'finance.yahoo.com/'
+        metric.title = meta_data['2. Symbol']
+        metric.id = meta_data['2. Symbol']
+        metric.source = 'alphavantage.co/'
         metric.references = None
-        metric.notes = None
-        metric.date_range = df_hist.index.min(), df_hist.index.max()
+        metric.notes = meta_data['1. Information']
+        metric.date_range = df_ts.index.min(), df_ts.index.max()
         metric.frequency = None
-        metric.last_updated = None
+        metric.last_updated = meta_data['3. Last Refreshed']
         metric.obseravation_date = None
         metric.release = None
         metric.seasonal_adjustment = None
         metric.seasonal_adjustment_short = None
-        metric.t = df_hist.index.max() - df_hist.index.min()
+        metric.t = df_ts.index.max() - df_ts.index.min()
         metric.units = '$ - dollar'
         metric.units_short = '$'
-        metric.set_metadata(**tkr.info)
+        #metric.set_metadata(**meta_data.info)
+        '''
+        #TODO:add
+        tkr.get_shares_full(start=start_date, end=end_date)
+        tkr.msft.actions
+        tkr.msft.dividends
+        tkr.splits
+        tkr.capital_gains
+        '''
 
-        #cache and return results
-        self._cache_data(tickerId, df_hist)
         return metric
     
     '''
