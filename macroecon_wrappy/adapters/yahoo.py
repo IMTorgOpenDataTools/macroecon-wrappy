@@ -16,6 +16,7 @@ __license__ = "MIT"
 
 from .adapter import AdapterInterface
 from ..metric import Metric
+from .. import utils
 
 import pandas as pd
 from requests import Session
@@ -70,63 +71,112 @@ class YahooAdapter(AdapterInterface):
         self.wrapper, direcetly:
             >>> YahooFin.self.wrapper.download(tickerId, period="max", session=self.session)
         """
-        tickerId = kwargs['tickers']
+
+        def metric_factory(ts, tkr=None, df_hist=None):
+            """..."""
+            metric = Metric(ts)
+            if tkr:
+                metric.title = tkr.info['longName']
+                metric.id = tkr.info['symbol']
+                metric.set_metadata(**tkr.info)
+            else:
+                metric.title = None
+                metric.id = None
+            metric.source = 'finance.yahoo.com/'
+            metric.references = None
+            metric.notes = None
+            if df_hist.shape[0] > 0:
+                metric.date_range = df_hist.index.min(), df_hist.index.max()
+                metric.t = df_hist.index.max() - df_hist.index.min()
+            else:
+                metric.date_range = None, None
+                metric.t = None
+            metric.frequency = None
+            metric.last_updated = None
+            metric.obseravation_date = None
+            metric.release = None
+            metric.seasonal_adjustment = None
+            metric.seasonal_adjustment_short = None
+            metric.units = '$ - dollar'
+            metric.units_short = '$'
+            return metric
         
-        #check if already available
-        data = self._get_data_if_cached(key=tickerId)
-        if data:
-            df_hist = data['df']
-            tkr = self.wrapper.Ticker(tickerId)
-            for key, value in data['tkr'].items():
-                setattr(tkr, key, value)
-        else:
-            #o/w get data
-            try:
-                tkr = self.wrapper.Ticker(tickerId)
-                time.sleep(1)#TODO:anything more pythonic?
-                if list(kwargs.items()).__len__()==1:
-                    df_hist = self.wrapper.download(tickerId, period="max")
-                else:
-                    df_hist = self.wrapper.download(**kwargs)
-                time.sleep(1)
-                attrs = {k:v for k,v in tkr.__dict__.items() if type(v) in [float, int, str, dict]}   # use get_recursive_items() here
+        def get_data_for_single_ticker(ticker):
+            """
+            Note: metadata requested
+            """
+            results = {}
+            tkr = self.wrapper.Ticker(ticker)
+            time.sleep(1)#TODO:anything more pythonic?
+            df_hist = self.wrapper.download(ticker, period="max")
+            time.sleep(1)
+            attrs = {k:v for k,v in tkr.__dict__.items() if type(v) in [float, int, str, dict]}   # use get_recursive_items() here
+            data = {
+                'df': df_hist,
+                'tkr': attrs
+                }
+            self._cache_data(ticker, data)
+            results[ticker] = data
+            return results
+        
+        def get_data_for_multiple_tickers(tickers):
+            """
+            Note: no metadata requested
+            """
+            results = {}
+            df_multi_index = self.wrapper.download(tickers, period="max")
+            dfs = utils.separate_batch_call_to_dict_of_dfs(df_multi_index )
+            time.sleep(1)
+            for tkr, df_hist in dfs.items():
                 data = {
                     'df': df_hist,
-                    'tkr': attrs
-                }
-                self._cache_data(tickerId, data)
-                '''
-                #TODO:add
-                tkr.get_shares_full(start=start_date, end=end_date)
-                tkr.msft.actions
-                tkr.msft.dividends
-                tkr.splits
-                tkr.capital_gains
-                '''
+                    'tkr': None
+                    }
+                self._cache_data(tkr, data)
+                results[tkr] = data
+            return results
+        
+        #check if available in cache
+        def check_retrieve_from_cache(ticker_list):
+            """..."""
+            missing_data = {}
+            available_data = {}
+            for ticker in ticker_list:
+                data = self._get_data_if_cached(key=ticker)
+                if data:
+                    tkr = self.wrapper.Ticker(ticker)
+                    if 'tkr' in data:
+                        for key, value in data['tkr'].items():
+                            setattr(tkr, key, value)
+                        data['tkr'] = tkr
+                    available_data[ticker] = data
+                else:
+                    missing_data[ticker] = None
+            return available_data, missing_data
+        
+        #main
+        tickerIds = kwargs['tickers']
+        if type(tickerIds) == str:
+            tickerIds = [tickerIds]
+        #cache
+        available_data, missing_data = check_retrieve_from_cache(tickerIds)
+        #o/w get data
+        if missing_data:
+            try:
+                if len(missing_data.keys()) == 1:
+                    ticker = list(missing_data.keys())[0]
+                    more_available_data = get_data_for_single_ticker(ticker)
+                else:
+                    more_available_data = get_data_for_multiple_tickers(missing_data.keys())
+                available_data.update(more_available_data)
             except Exception as e:
                 print(e)
-        ts = df_hist[['High', 'Low']].mean(axis=1)
-
-        #metadata mapping needs improvement
-        metric = Metric(ts)
-        metric.title = tkr.info['longName']
-        metric.id = tkr.info['symbol']
-        metric.source = 'finance.yahoo.com/'
-        metric.references = None
-        metric.notes = None
-        metric.date_range = df_hist.index.min(), df_hist.index.max()
-        metric.frequency = None
-        metric.last_updated = None
-        metric.obseravation_date = None
-        metric.release = None
-        metric.seasonal_adjustment = None
-        metric.seasonal_adjustment_short = None
-        metric.t = df_hist.index.max() - df_hist.index.min()
-        metric.units = '$ - dollar'
-        metric.units_short = '$'
-        metric.set_metadata(**tkr.info)
-
-        return metric
+        metrics = {}
+        for symbol, data in available_data.items():
+            ts = data['df'][['High', 'Low']].mean(axis=1)
+            metric = metric_factory(ts, tkr=None, df_hist=data['df'])    #tkr=data['tkr'] ?whats wrong
+            metrics[symbol] = metric
+        return metrics
     
     '''
     def _set_cache_path(self, auth, name):

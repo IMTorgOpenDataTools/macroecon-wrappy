@@ -8,8 +8,12 @@ __version__ = "0.1.0"
 __license__ = "MIT"
 
 
+import pandas as pd
+
 from pathlib import Path
 import os, shutil
+
+
 
 def delete_folder(dir):
     """Delete folder and all child dirs, files."""
@@ -47,11 +51,13 @@ def separate_batch_call_to_dict_of_dfs(batch_tickers):
     return dfs
 
 
-def get_recursive_items(data, criteria_func):
+def get_recursive_items(data, criteria_func=None):
     """
     TODO: use this at ref
     Recursively finds items where criteria_func(key, value) is True.
     Returns a list of (key, value) tuples.
+
+    integrate with yahoo.py
 
     Usage: 
         #get all items where the value is an integer > 100
@@ -59,6 +65,10 @@ def get_recursive_items(data, criteria_func):
         found = get_recursive_items(my_data, lambda k, v: isinstance(v, int) and v > 100)
         # Output: [('c', 150), ('e', 300)]
     """
+    def criteria_func(k,v):
+        v in [float, int, str, dict]
+        return True
+    
     results = []
     if isinstance(data, dict):
         for k, v in data.items():
