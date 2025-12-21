@@ -2,6 +2,9 @@
 """
 alpha vantage Adapter 
 
+
+TODO: update with yahoo.py structure
+
 Note:
 * [alpha_vantage](https://github.com/RomelTorres/alpha_vantage)
 * Use the abstract Adapter methods or access the wrapper directly with: `self.wrapper`

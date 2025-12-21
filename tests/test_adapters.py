@@ -51,14 +51,16 @@ def test_fredapi():
     assert isinstance(metric, Metric)
 
 def test_yahoo():
+    #setup
     wd = cache_path / 'yfinance'
-    #delete_folder(wd)
+    delete_folder(wd)
     YahooFin.set_wrapper(auth, yfc)
+    #single request
     metrics = YahooFin.get_data(tickers='MSFT')
     metric = metrics['MSFT']
     assert isinstance(metric, Metric)
-    #assert metric.id == 'MSFT'  TODO
-    #assert metric.title == 'Microsoft Corporation'
+    assert metric.id == 'MSFT'
+    assert metric.title == 'Microsoft Corporation'
     assert metric.shape[0] >= 9655
     metrics1 = YahooFin.get_data(tickers='MSFT', period="max")
     metric1 = metrics1['MSFT']
@@ -77,7 +79,6 @@ def test_yahoo():
     metrics = YahooFin.get_data(tickers=['MSFT','NVDA'])
     assert metrics['MSFT'].shape[0] > 10000
     assert metrics['NVDA'].shape[0] > 6000
-
 
 def test_alphavantage():
     wd = cache_path / 'alphavantage'

@@ -28,6 +28,7 @@ class CachedLimiterSession(CacheMixin, LimiterMixin, Session):
     pass
 
 import time
+import json
 
 
 
@@ -110,12 +111,16 @@ class YahooAdapter(AdapterInterface):
             time.sleep(1)#TODO:anything more pythonic?
             df_hist = self.wrapper.download(ticker, period="max")
             time.sleep(1)
-            attrs = {k:v for k,v in tkr.__dict__.items() if type(v) in [float, int, str, dict]}   # use get_recursive_items() here
+            tmp1 = utils.filter_nested_dict(tkr.__dict__, utils.criteria_func)
+            tmp2 = utils.serialize_dir(tkr)
+            tmp2.update(tmp1)
+            #attrs = json.dumps(tmp2)#, default=utils.replace_non_serializable)
             data = {
                 'df': df_hist,
-                'tkr': attrs
+                'tkr': tmp2
                 }
             self._cache_data(ticker, data)
+            data['tkr'] = tkr
             results[ticker] = data
             return results
         
@@ -147,7 +152,10 @@ class YahooAdapter(AdapterInterface):
                     tkr = self.wrapper.Ticker(ticker)
                     if 'tkr' in data:
                         for key, value in data['tkr'].items():
-                            setattr(tkr, key, value)
+                            try:
+                                setattr(tkr, key, value)
+                            except:
+                                pass
                         data['tkr'] = tkr
                     available_data[ticker] = data
                 else:
@@ -174,7 +182,7 @@ class YahooAdapter(AdapterInterface):
         metrics = {}
         for symbol, data in available_data.items():
             ts = data['df'][['High', 'Low']].mean(axis=1)
-            metric = metric_factory(ts, tkr=None, df_hist=data['df'])    #tkr=data['tkr'] ?whats wrong
+            metric = metric_factory(ts, tkr=data['tkr'], df_hist=data['df'])    #tkr=data['tkr'] ?whats wrong
             metrics[symbol] = metric
         return metrics
     
