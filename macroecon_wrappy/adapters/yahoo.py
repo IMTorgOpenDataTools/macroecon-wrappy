@@ -31,39 +31,6 @@ import time
 
 
 
-def get_recursive_items(data, criteria_func):
-    """
-    TODO: use this at ref
-    Recursively finds items where criteria_func(key, value) is True.
-    Returns a list of (key, value) tuples.
-    """
-    results = []
-    if isinstance(data, dict):
-        for k, v in data.items():
-            # Check if the current key-value pair meets criteria
-            if criteria_func(k, v):
-                results.append((k, v))
-            
-            # Recurse if value is a nested dict or list
-            if isinstance(v, (dict, list)):
-                results.extend(get_recursive_items(v, criteria_func))
-                
-    elif isinstance(data, list):
-        for item in data:
-            if isinstance(item, (dict, list)):
-                results.extend(get_recursive_items(item, criteria_func))
-                
-    return results
-
-# Example Usage: Get all items where the value is an integer > 100
-my_data = {"a": 50, "b": {"c": 150, "d": [200, {"e": 300}]}}
-found = get_recursive_items(my_data, lambda k, v: isinstance(v, int) and v > 100)
-# Output: [('c', 150), ('e', 300)]
-
-
-
-
-
 class YahooAdapter(AdapterInterface):
     """Interface for wrapper adapter
     
