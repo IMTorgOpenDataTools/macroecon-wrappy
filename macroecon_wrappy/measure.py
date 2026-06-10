@@ -72,6 +72,11 @@ class Measure:
             result_metrics = [Metric(metric.sort_index(ascending=False)) for metric in self.metrics if metric in metric_lst]
             return result_metrics
 
+    def get_subset(self, metric_lst=[]):
+        """Return a subset measure of specified Metrics."""
+        subset = self.get_metric(metric_lst)
+        return Measure(subset)
+    
     def set_cycle(self, cycle_epoch):
         """Set the default cycle for transformations."""
         if isinstance(cycle_epoch, Epoch):
