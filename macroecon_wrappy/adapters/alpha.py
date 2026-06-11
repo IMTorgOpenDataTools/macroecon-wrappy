@@ -40,7 +40,7 @@ class AlphaVantageAdapter(AdapterInterface):
 
     def set_wrapper(self, auth, wrapper):
         """Set the authenticated wrapper and cache."""
-        self.wrapper = wrapper(key=auth.data['API_KEY_ALPHA'], output_format='pandas', indexing_type='date')
+        self.wrapper = wrapper(key=auth.data['alpha_vantage_api_key'], output_format='pandas', indexing_type='date')
         self.wrapper_name = 'alphavantage'
         self.cache_file = auth.cache_path / f"{self.wrapper_name}" / f"{self.wrapper_name}.cache"
         '''

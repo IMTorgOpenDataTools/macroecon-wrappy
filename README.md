@@ -10,7 +10,7 @@ This module is used independently of any particular API-wrapper.  However, some 
 Create a file (`SECRETS.yaml`) with all appropriate keys and values.
 
 ```bash
-pip install macroecon_wrappy
+uv pip install macroecon_wrappy
 ```
 
 ## Usage
@@ -22,6 +22,7 @@ Set the authentication key for the wrapper.
 Add external libraries using the `--dev` argument, such as:
 
 ```bash
+export UV_LINK_MODE=copy    #force uv to copy instead of hardlinking inside container
 uv add --dev waybackpack
 ```
 

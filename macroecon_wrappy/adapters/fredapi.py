@@ -23,7 +23,7 @@ class FredApiAdapter(AdapterInterface):
 
     def set_wrapper(self, auth, wrapper):
         """Set the authenticated wrapper."""
-        self.wrapper = wrapper(api_key=auth.data['API_KEY_FED'])
+        self.wrapper = wrapper(api_key=auth.data['fred_api_key'])
         self.wrapper_name = 'fredapi'
         self._set_cache_path(auth, self.wrapper_name)
 
