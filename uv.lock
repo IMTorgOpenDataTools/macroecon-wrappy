@@ -33,6 +33,7 @@ dev = [
     { name = "openbb" },
     { name = "openbb-alpha-vantage" },
     { name = "openbb-fmp" },
+    { name = "pandas-datareader" },
     { name = "pytest" },
     { name = "requests-html" },
     { name = "waybackpack" },
@@ -68,6 +69,7 @@ dev = [
     { name = "openbb", specifier = ">=4.7.2" },
     { name = "openbb-alpha-vantage", specifier = ">=1.6.1" },
     { name = "openbb-fmp", specifier = ">=1.6.1" },
+    { name = "pandas-datareader", specifier = ">=0.11.1" },
     { name = "pytest" },
     { name = "requests-html" },
     { name = "waybackpack" },
@@ -2402,6 +2404,21 @@ wheels = [
 ]
 
 [[package]]
+name = "pandas-datareader"
+version = "0.11.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "lxml" },
+    { name = "pandas" },
+    { name = "requests" },
+    { name = "setuptools" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/58/86/288382815ce0b52585e8fbcdd8167cdbc056e2d750dea84fcc2ba5c36748/pandas_datareader-0.11.1.tar.gz", hash = "sha256:e1eadb6d2ccaa4b7a876a1c81b6ff0307fa7a08b56f7799862a50207c2e65a05", size = 206210, upload-time = "2026-06-24T14:18:47.052Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/fc/2d/2e39dec8f88329ca20cdd5913b549a2c8f32551a415a3775f6d6b3b054ca/pandas_datareader-0.11.1-py3-none-any.whl", hash = "sha256:adec218aa38c0f20606328fcc6517a0d1a735469c7635b91d3e85bb7336f297f", size = 65904, upload-time = "2026-06-24T14:18:39.091Z" },
+]
+
+[[package]]
 name = "pandocfilters"
 version = "1.5.1"
 source = { registry = "https://pypi.org/simple" }
@@ -3454,6 +3471,15 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/ac/70/64b4d7ca92f9cf2e6fc6aaa2eecf80bb9b6b985043a9583f32f8177ea122/scipy-1.16.3-cp314-cp314t-musllinux_1_2_x86_64.whl", hash = "sha256:ffa6eea95283b2b8079b821dc11f50a17d0571c92b43e2b5b12764dc5f9b285d", size = 38802779, upload-time = "2025-10-28T17:37:59.393Z" },
     { url = "https://files.pythonhosted.org/packages/61/82/8d0e39f62764cce5ffd5284131e109f07cf8955aef9ab8ed4e3aa5e30539/scipy-1.16.3-cp314-cp314t-win_amd64.whl", hash = "sha256:d9f48cafc7ce94cf9b15c6bffdc443a81a27bf7075cf2dcd5c8b40f85d10c4e7", size = 39471128, upload-time = "2025-10-28T17:38:05.259Z" },
     { url = "https://files.pythonhosted.org/packages/64/47/a494741db7280eae6dc033510c319e34d42dd41b7ac0c7ead39354d1a2b5/scipy-1.16.3-cp314-cp314t-win_arm64.whl", hash = "sha256:21d9d6b197227a12dcbf9633320a4e34c6b0e51c57268df255a0942983bac562", size = 26464127, upload-time = "2025-10-28T17:38:11.34Z" },
+]
+
+[[package]]
+name = "setuptools"
+version = "83.0.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/34/26/f5d29e25ffdb535afef2d35cdb55b325298f96debd670da4c325e08d70f4/setuptools-83.0.0.tar.gz", hash = "sha256:025bccbbf0fa05b6192bc64ae1e7b16e001fd6d6d4d5de03c97b1c1ade523bef", size = 1154254, upload-time = "2026-07-04T15:31:22.699Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/5d/40/e1e72872c6354b306daef1703549e8e83b4d43cfea356311bf722a043752/setuptools-83.0.0-py3-none-any.whl", hash = "sha256:29b23c360f22f414dc7336bb39178cc7bcbf6021ed2733cde173f09dba19abb3", size = 1008090, upload-time = "2026-07-04T15:31:20.885Z" },
 ]
 
 [[package]]
